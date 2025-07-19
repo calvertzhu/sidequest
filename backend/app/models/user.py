@@ -14,3 +14,4 @@ class User:
             'location': self.location,
             'travel_dates': self.travel_dates
         } 
+        
