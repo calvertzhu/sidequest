@@ -14,7 +14,7 @@ def create_event():
             "location": data["location"],
             "time": datetime.strptime(data["time"], "%Y-%m-%dT%H:%M"),
             "desc": data.get("desc", ""),
-            "users": data.get("users", [])  # Optional list of user IDs
+            "users": data.get("users", [])
         }
         result = db.events.insert_one(event)
         return jsonify({"_id": str(result.inserted_id)}), 201
@@ -41,5 +41,12 @@ def get_events():
     for event in events:
         event["_id"] = str(event["_id"])
         event["time"] = event["time"].strftime("%Y-%m-%dT%H:%M")
+
+        user_ids = event.get("users", [])
+        if user_ids:
+            users = list(db.users.find({"_id": {"$in": user_ids}}))
+            for user in users:
+                user["_id"] = str(user["_id"])
+            event["users"] = users
 
     return jsonify(events), 200

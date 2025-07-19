@@ -1,5 +1,6 @@
 from flask import Blueprint, request, jsonify, current_app
 from datetime import datetime
+from bson import ObjectId
 
 users_bp = Blueprint('users', __name__)
 
@@ -11,12 +12,14 @@ def create_user():
     # Parse and sanitize input
     try:
         user = {
+            "email": data["email"],
             "name": data["name"],
             "birthday": datetime.strptime(data["birthday"], "%Y-%m-%d"),
             "gender": data["gender"],
             "interests": data.get("interests", []),
             "profile_pic": data.get("profile_pic", ""),
-            "dietary_restrictions": data.get("dietary_restrictions", "")
+            "dietary_restrictions": data.get("dietary_restrictions", ""),
+            "location": data.get("location", "")
         }
 
         result = db.users.insert_one(user)
@@ -35,3 +38,21 @@ def get_all_users():
         if "birthday" in user:
             user["birthday"] = user["birthday"].strftime("%Y-%m-%d")
     return jsonify(users), 200
+
+@users_bp.route("/users/<user_id>", methods=["GET"])
+def get_user_by_id(user_id):
+    db = current_app.config["DB"]
+
+    try:
+        user = db.users.find_one({"_id": ObjectId(user_id)})
+        if not user:
+            return jsonify({"error": "User not found"}), 404
+
+        user["_id"] = str(user["_id"])
+        if "birthday" in user:
+            user["birthday"] = user["birthday"].strftime("%Y-%m-%d")
+
+        return jsonify(user), 200
+
+    except Exception as e:
+        return jsonify({"error": str(e)}), 400

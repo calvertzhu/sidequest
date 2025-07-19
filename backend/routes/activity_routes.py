@@ -1,18 +1,22 @@
 import os
 import requests
-from flask import Blueprint, request, jsonify
+from flask import Blueprint, request, jsonify, current_app
+from datetime import datetime
 from dotenv import load_dotenv
 
 load_dotenv()
 
-activity_routes = Blueprint('activity_routes', __name__)
+activities_bp = Blueprint("activities", __name__)
 
 GOOGLE_API_KEY = os.getenv("GOOGLE_API_KEY")
 EVENTBRITE_TOKEN = os.getenv("EVENTBRITE_TOKEN")
 
-@activity_routes.route('/search-activities', methods=['POST'])
+
+@activities_bp.route("/activities/search", methods=["POST"])
 def search_activities():
     data = request.get_json()
+    db = current_app.config["DB"]
+
     city = data.get("location")
     start_date = data.get("start_date")
     end_date = data.get("end_date")
@@ -23,15 +27,15 @@ def search_activities():
 
     results = []
 
-    # Google Places query for each category
+    # Google Places search per category
     for category in categories:
-        url = f"https://maps.googleapis.com/maps/api/place/textsearch/json"
+        url = "https://maps.googleapis.com/maps/api/place/textsearch/json"
         params = {
             "query": f"{category} in {city}",
             "key": GOOGLE_API_KEY
         }
-        res = requests.get(url, params=params).json()
-        for place in res.get("results", []):
+        response = requests.get(url, params=params).json()
+        for place in response.get("results", []):
             results.append({
                 "name": place.get("name"),
                 "type": "place",
@@ -41,8 +45,8 @@ def search_activities():
                 "address": place.get("formatted_address")
             })
 
-    # Eventbrite query
-    eb_url = f"https://www.eventbriteapi.com/v3/events/search/"
+    # Eventbrite search
+    eb_url = "https://www.eventbriteapi.com/v3/events/search/"
     headers = {"Authorization": f"Bearer {EVENTBRITE_TOKEN}"}
     eb_params = {
         "location.address": city,
@@ -50,20 +54,16 @@ def search_activities():
         "start_date.range_end": f"{end_date}T23:59:59"
     }
 
-    eb_res = requests.get(eb_url, headers=headers, params=eb_params).json()
-    for e in eb_res.get("events", []):
+    eb_response = requests.get(eb_url, headers=headers, params=eb_params).json()
+    for event in eb_response.get("events", []):
         results.append({
-            "name": e.get("name", {}).get("text"),
+            "name": event.get("name", {}).get("text"),
             "type": "event",
             "tags": ["event"],
             "location": city,
             "source": "Eventbrite",
-            "start": e.get("start", {}).get("local"),
-            "url": e.get("url")
+            "start": event.get("start", {}).get("local"),
+            "url": event.get("url")
         })
 
     return jsonify(results), 200
-
-
-
-
