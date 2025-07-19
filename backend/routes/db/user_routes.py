@@ -1,6 +1,7 @@
 from flask import Blueprint, request, jsonify, current_app
 from datetime import datetime
 from bson import ObjectId
+from app.models.user import User
 
 users_bp = Blueprint('users', __name__)
 
@@ -11,17 +12,20 @@ def create_user():
 
     # Parse and sanitize input
     try:
-        user = {
-            "email": data["email"],
-            "name": data["name"],
-            "birthday": datetime.strptime(data["birthday"], "%Y-%m-%d"),
-            "gender": data["gender"],
-            "interests": data.get("interests", []),
-            "profile_pic": data.get("profile_pic", ""),
-            "dietary_restrictions": data.get("dietary_restrictions", ""),
-            "location": data.get("location", "")
-        }
+        user_obj = User(
+            name=data["name"],
+            email=data["email"],
+            birthday=data["birthday"],  # still as string "YYYY-MM-DD"
+            gender=data["gender"],
+            interests=data.get("interests", []),
+            profile_pic=data.get("profile_pic", ""),
+            dietary_restrictions=data.get("dietary_restrictions", ""),
+            location=data.get("location", ""),
+            travel_dates=data.get("travel_dates", {})  # optional or required, depending on use
+        )
 
+        user = user_obj.to_dict()
+        user["birthday"] = datetime.strptime(user["birthday"], "%Y-%m-%d")  # convert before DB insert
         result = db.users.insert_one(user)
         return jsonify({"_id": str(result.inserted_id)}), 201
 
