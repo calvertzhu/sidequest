@@ -1,5 +1,16 @@
 import React from "react";
+import AuthLogin from "./components/AuthLogin";
+import AuthProfile from "./components/AuthProfile";
+import AuthLogout from "./components/AuthLogout";
+import AuthSignup from "./components/AuthSignup";
 
 export default function App() {
-  return <div className="text-3xl">App</div>;
+  return (
+    <>
+      <AuthLogin></AuthLogin>
+      <AuthLogout></AuthLogout>
+      <AuthSignup></AuthSignup>
+      <AuthProfile></AuthProfile>
+    </>
+  );
 }
