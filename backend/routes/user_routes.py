@@ -9,6 +9,7 @@ def register():
     required_fields = ['name', 'email', 'interests', 'location', 'travel_dates']
     if not all(field in data for field in required_fields):
         return jsonify({'error': 'Missing required fields'}), 400
+
     user = User(
         name=data['name'],
         email=data['email'],
@@ -16,6 +17,8 @@ def register():
         location=data['location'],
         travel_dates=data['travel_dates']
     )
+
     db = current_app.config['db']
     db.users.insert_one(user.to_dict())
-    return jsonify({'message': 'User registered successfully'}), 201 
+
+    return jsonify({'message': 'User registered successfully'}), 201
