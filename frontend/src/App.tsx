@@ -1,16 +1,21 @@
-import React from "react";
-import AuthLogin from "./components/AuthLogin";
-import AuthProfile from "./components/AuthProfile";
-import AuthLogout from "./components/AuthLogout";
-import AuthSignup from "./components/AuthSignup";
+import React from 'react';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import LandingPage from './pages/LandingPage';
+import ProfilePage from './pages/ProfilePage';
+import TripsPage from './pages/TripsPage';
+import ConnectPage from './pages/ConnectPage';
+import MessagesPage from './pages/MessagesPage';
 
 export default function App() {
   return (
-    <>
-      <AuthLogin></AuthLogin>
-      <AuthLogout></AuthLogout>
-      <AuthSignup></AuthSignup>
-      <AuthProfile></AuthProfile>
-    </>
+    <Router>
+      <Routes>
+        <Route path="/" element={<LandingPage />} />
+        <Route path="/profile" element={<ProfilePage />} />
+        <Route path="/trips" element={<TripsPage />} />
+        <Route path="/connect" element={<ConnectPage />} />
+        <Route path="/messages" element={<MessagesPage />} />
+      </Routes>
+    </Router>
   );
 }
