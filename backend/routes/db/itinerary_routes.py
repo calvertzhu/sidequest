@@ -1,5 +1,6 @@
 from flask import Blueprint, request, jsonify, current_app
 from bson import ObjectId
+from app.models.itinerary import Itinerary  # adjust path as needed
 
 itins_bp = Blueprint("itineraries", __name__)
 
@@ -8,15 +9,14 @@ def create_itinerary():
     db = current_app.config["DB"]
     data = request.json
     try:
-        itinerary = {
-            "user_id": ObjectId(data["user_id"]),
-            "location": data["location"],
-            "date_range": {
-                "from": data["date_range"]["from"],
-                "to": data["date_range"]["to"]
-            },
-            "event_ids": [ObjectId(eid) for eid in data.get("event_ids", [])]
-        }
+        itin_obj = Itinerary(
+            user_id=data["user_id"],
+            location=data["location"],
+            date_from=data["date_range"]["from"],
+            date_to=data["date_range"]["to"],
+            event_ids=data.get("event_ids", [])
+        )
+        itinerary = itin_obj.to_dict()
         result = db.itineraries.insert_one(itinerary)
         return jsonify({"_id": str(result.inserted_id)}), 201
     except Exception as e:
