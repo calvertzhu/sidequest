@@ -1,5 +1,7 @@
-import React, { useState } from 'react';
-import TabNavigation from '../components/TabNavigation';
+import React, { useState } from "react";
+import TabNavigation from "../components/TabNavigation";
+import { useAuth0 } from "@auth0/auth0-react";
+import api from "../api";
 
 interface ItineraryActivity {
   name: string;
@@ -33,12 +35,12 @@ interface Trip {
 }
 
 const emptyForm = {
-  name: '',
-  budget: '',
-  startDate: '',
-  endDate: '',
-  locations: '',
-  preferences: '',
+  name: "",
+  budget: "",
+  startDate: "",
+  endDate: "",
+  locations: "",
+  preferences: "",
 };
 
 // Mock function to generate a detailed itinerary
@@ -49,30 +51,30 @@ const generateDetailedItinerary = (): ItineraryDay[] => {
       day: 1,
       activities: [
         {
-          name: 'City Walking Tour',
-          time: '09:00 - 12:00',
-          description: 'Guided tour of the city center and main attractions.',
-          price: '$30',
-          mapsUrl: 'https://maps.google.com/?q=city+center',
+          name: "City Walking Tour",
+          time: "09:00 - 12:00",
+          description: "Guided tour of the city center and main attractions.",
+          price: "$30",
+          mapsUrl: "https://maps.google.com/?q=city+center",
         },
         {
-          name: 'Art Museum',
-          time: '13:00 - 15:00',
-          description: 'Explore local and international art exhibits.',
-          price: '$15',
-          mapsUrl: 'https://maps.google.com/?q=art+museum',
+          name: "Art Museum",
+          time: "13:00 - 15:00",
+          description: "Explore local and international art exhibits.",
+          price: "$15",
+          mapsUrl: "https://maps.google.com/?q=art+museum",
         },
       ],
       food: [
         {
-          name: 'Cafe Aroma',
-          price: '$12',
-          mapsUrl: 'https://maps.google.com/?q=cafe+aroma',
+          name: "Cafe Aroma",
+          price: "$12",
+          mapsUrl: "https://maps.google.com/?q=cafe+aroma",
         },
         {
-          name: 'Bistro Central',
-          price: '$25',
-          mapsUrl: 'https://maps.google.com/?q=bistro+central',
+          name: "Bistro Central",
+          price: "$25",
+          mapsUrl: "https://maps.google.com/?q=bistro+central",
         },
       ],
     },
@@ -80,30 +82,30 @@ const generateDetailedItinerary = (): ItineraryDay[] => {
       day: 2,
       activities: [
         {
-          name: 'Kayaking Adventure',
-          time: '10:00 - 13:00',
-          description: 'Kayak on the river with a local guide.',
-          price: '$40',
-          mapsUrl: 'https://maps.google.com/?q=river+kayak',
+          name: "Kayaking Adventure",
+          time: "10:00 - 13:00",
+          description: "Kayak on the river with a local guide.",
+          price: "$40",
+          mapsUrl: "https://maps.google.com/?q=river+kayak",
         },
         {
-          name: 'Botanical Gardens',
-          time: '15:00 - 17:00',
-          description: 'Relax and enjoy the beautiful gardens.',
-          price: '$10',
-          mapsUrl: 'https://maps.google.com/?q=botanical+gardens',
+          name: "Botanical Gardens",
+          time: "15:00 - 17:00",
+          description: "Relax and enjoy the beautiful gardens.",
+          price: "$10",
+          mapsUrl: "https://maps.google.com/?q=botanical+gardens",
         },
       ],
       food: [
         {
-          name: 'Green Leaf Vegan',
-          price: '$18',
-          mapsUrl: 'https://maps.google.com/?q=green+leaf+vegan',
+          name: "Green Leaf Vegan",
+          price: "$18",
+          mapsUrl: "https://maps.google.com/?q=green+leaf+vegan",
         },
         {
-          name: 'Pizza Palace',
-          price: '$20',
-          mapsUrl: 'https://maps.google.com/?q=pizza+palace',
+          name: "Pizza Palace",
+          price: "$20",
+          mapsUrl: "https://maps.google.com/?q=pizza+palace",
         },
       ],
     },
@@ -111,52 +113,94 @@ const generateDetailedItinerary = (): ItineraryDay[] => {
       day: 3,
       activities: [
         {
-          name: 'Local Market',
-          time: '09:30 - 11:00',
-          description: 'Shop for souvenirs and local products.',
-          price: 'Free',
-          mapsUrl: 'https://maps.google.com/?q=local+market',
+          name: "Local Market",
+          time: "09:30 - 11:00",
+          description: "Shop for souvenirs and local products.",
+          price: "Free",
+          mapsUrl: "https://maps.google.com/?q=local+market",
         },
         {
-          name: 'Beach Afternoon',
-          time: '13:00 - 17:00',
-          description: 'Relax at the beach and swim.',
-          price: 'Free',
-          mapsUrl: 'https://maps.google.com/?q=beach',
+          name: "Beach Afternoon",
+          time: "13:00 - 17:00",
+          description: "Relax at the beach and swim.",
+          price: "Free",
+          mapsUrl: "https://maps.google.com/?q=beach",
         },
       ],
       food: [
         {
-          name: 'Seaside Grill',
-          price: '$28',
-          mapsUrl: 'https://maps.google.com/?q=seaside+grill',
+          name: "Seaside Grill",
+          price: "$28",
+          mapsUrl: "https://maps.google.com/?q=seaside+grill",
         },
         {
-          name: 'Ice Cream Bar',
-          price: '$7',
-          mapsUrl: 'https://maps.google.com/?q=ice+cream+bar',
+          name: "Ice Cream Bar",
+          price: "$7",
+          mapsUrl: "https://maps.google.com/?q=ice+cream+bar",
         },
       ],
     },
   ];
 };
 
+var currentDate = new Date();
+currentDate.setDate(currentDate.getDate() - 1);
+
 const TripsPage = () => {
   const [trips, setTrips] = useState<Trip[]>([]);
-  const [form, setForm] = useState<Omit<Trip, 'id'>>({ ...emptyForm });
   const [modalOpen, setModalOpen] = useState(false);
   const [editingId, setEditingId] = useState<number | null>(null);
   const [viewingItineraryId, setViewingItineraryId] = useState<number | null>(
     null
   );
+  const { user } = useAuth0();
+  const [isLoading, setLoading] = useState(false);
+
+  const [form, setForm] = useState<any>({
+    tripName: "",
+    budget: "",
+    startDate: currentDate.toISOString().split("T")[0],
+    endDate: currentDate.toISOString().split("T")[0],
+    locations: "",
+    activities: "",
+  });
+
+  const handleFormChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
+    setForm((prev: any) => ({ ...prev, [e.target.name]: e.target.value }));
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    console.log(form);
+
+    setLoading(true);
+    try {
+      const res = await api.post("/activities/search", {
+        user_email: user?.email,
+        location: form.locations,
+        start_date: form.startDate,
+        end_date: form.endDate,
+        categories: form.activities,
+        budget: form.budget,
+        trip_name: form.tripName,
+      });
+      console.log(res);
+    } catch (err) {
+      console.error("Error fetching activities:", err);
+    }
+    setLoading(false);
+
+    console.log(form);
+    closeModal();
+  };
 
   const openModal = (trip?: Trip) => {
     if (trip) {
       const { id, ...rest } = trip;
-      setForm(rest);
       setEditingId(id);
     } else {
-      setForm({ ...emptyForm });
       setEditingId(null);
     }
     setModalOpen(true);
@@ -175,38 +219,6 @@ const TripsPage = () => {
     setForm((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (
-      !form.name ||
-      !form.budget ||
-      !form.startDate ||
-      !form.endDate ||
-      !form.locations
-    )
-      return;
-    const itinerary = generateDetailedItinerary();
-    if (editingId !== null) {
-      setTrips((prev) =>
-        prev.map((trip) =>
-          trip.id === editingId
-            ? { ...trip, ...form, id: editingId, itinerary }
-            : trip
-        )
-      );
-    } else {
-      setTrips((prev) => [
-        ...prev,
-        {
-          id: Date.now(),
-          ...form,
-          itinerary,
-        },
-      ]);
-    }
-    closeModal();
-  };
-
   const handleDelete = (id: number) => {
     setTrips((prev) => prev.filter((trip) => trip.id !== id));
     if (viewingItineraryId === id) setViewingItineraryId(null);
@@ -221,6 +233,8 @@ const TripsPage = () => {
   };
 
   const viewingTrip = trips.find((trip) => trip.id === viewingItineraryId);
+
+  console.log(form);
 
   return (
     <div className="bg-gradient-to-b from-gray-900 to-gray-800 min-h-screen text-white flex flex-col">
@@ -302,95 +316,104 @@ const TripsPage = () => {
                 &times;
               </button>
               <h3 className="text-xl font-bold text-blue-400 mb-4">
-                {editingId !== null ? 'Edit Trip' : 'Create a New Trip'}
+                {editingId !== null ? "Edit Trip" : "Create a New Trip"}
               </h3>
               <form onSubmit={handleSubmit} className="grid grid-cols-1 gap-4">
-                <div>
-                  <label className="block text-blue-300 font-semibold mb-1">
-                    Trip Name
-                  </label>
-                  <input
-                    className="w-full bg-gray-800 border border-gray-700 rounded px-3 py-2 text-white"
-                    name="name"
-                    value={form.name}
-                    onChange={handleChange}
-                    placeholder="e.g. Summer in Spain"
-                    required
-                  />
-                </div>
-                <div>
-                  <label className="block text-blue-300 font-semibold mb-1">
-                    Budget (USD)
-                  </label>
-                  <input
-                    className="w-full bg-gray-800 border border-gray-700 rounded px-3 py-2 text-white"
-                    name="budget"
-                    value={form.budget}
-                    onChange={handleChange}
-                    placeholder="e.g. 1500"
-                    required
-                  />
-                </div>
-                <div className="flex gap-4">
-                  <div className="flex-1">
-                    <label className="block text-blue-300 font-semibold mb-1">
-                      Start Date
-                    </label>
-                    <input
-                      type="date"
-                      className="w-full bg-gray-800 border border-gray-700 rounded px-3 py-2 text-white"
-                      name="startDate"
-                      value={form.startDate}
-                      onChange={handleChange}
-                      required
-                    />
-                  </div>
-                  <div className="flex-1">
-                    <label className="block text-blue-300 font-semibold mb-1">
-                      End Date
-                    </label>
-                    <input
-                      type="date"
-                      className="w-full bg-gray-800 border border-gray-700 rounded px-3 py-2 text-white"
-                      name="endDate"
-                      value={form.endDate}
-                      onChange={handleChange}
-                      required
-                    />
-                  </div>
-                </div>
-                <div>
-                  <label className="block text-blue-300 font-semibold mb-1">
-                    Location(s)
-                  </label>
-                  <input
-                    className="w-full bg-gray-800 border border-gray-700 rounded px-3 py-2 text-white"
-                    name="locations"
-                    value={form.locations}
-                    onChange={handleChange}
-                    placeholder="e.g. Barcelona, Madrid"
-                    required
-                  />
-                </div>
-                <div>
-                  <label className="block text-blue-300 font-semibold mb-1">
-                    Activities/Preferences (optional)
-                  </label>
-                  <textarea
-                    className="w-full bg-gray-800 border border-gray-700 rounded px-3 py-2 text-white"
-                    name="preferences"
-                    value={form.preferences}
-                    onChange={handleChange}
-                    placeholder="e.g. beach, art museums, local food"
-                    rows={2}
-                  />
-                </div>
-                <button
-                  type="submit"
-                  className="mt-2 bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-6 rounded-full shadow-lg transition-all"
-                >
-                  {editingId !== null ? 'Save Changes' : 'Add Trip'}
-                </button>
+                {isLoading ? (
+                  <div>Loading...</div>
+                ) : (
+                  <>
+                    <div>
+                      <label className="block text-blue-300 font-semibold mb-1">
+                        Trip Name
+                      </label>
+                      <input
+                        className="w-full bg-gray-800 border border-gray-700 rounded px-3 py-2 text-white"
+                        name="tripName"
+                        value={form.tripName}
+                        onChange={(e) => handleFormChange(e)}
+                        placeholder="e.g. Summer in Spain"
+                        required
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-blue-300 font-semibold mb-1">
+                        Budget (USD)
+                      </label>
+                      <input
+                        className="w-full bg-gray-800 border border-gray-700 rounded px-3 py-2 text-white"
+                        name="budget"
+                        type="number"
+                        value={form.budget}
+                        onChange={(e) => handleFormChange(e)}
+                        placeholder="e.g. 1500"
+                        required
+                      />
+                    </div>
+                    <div className="flex gap-4">
+                      <div className="flex-1">
+                        <label className="block text-blue-300 font-semibold mb-1">
+                          Start Date
+                        </label>
+                        <input
+                          type="date"
+                          className="w-full bg-gray-800 border border-gray-700 rounded px-3 py-2 text-white"
+                          name="startDate"
+                          value={form.startDate}
+                          onChange={(e) => handleFormChange(e)}
+                          min={currentDate.toISOString().split("T")[0]}
+                          required
+                        />
+                      </div>
+                      <div className="flex-1">
+                        <label className="block text-blue-300 font-semibold mb-1">
+                          End Date
+                        </label>
+                        <input
+                          type="date"
+                          className="w-full bg-gray-800 border border-gray-700 rounded px-3 py-2 text-white"
+                          name="endDate"
+                          value={form.endDate}
+                          onChange={(e) => handleFormChange(e)}
+                          min={form.startDate}
+                          required
+                        />
+                      </div>
+                    </div>
+                    <div>
+                      <label className="block text-blue-300 font-semibold mb-1">
+                        Location(s)
+                      </label>
+                      <input
+                        className="w-full bg-gray-800 border border-gray-700 rounded px-3 py-2 text-white"
+                        name="locations"
+                        value={form.locations}
+                        onChange={handleChange}
+                        placeholder="e.g. Barcelona, Madrid"
+                        required
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-blue-300 font-semibold mb-1">
+                        Activities/Preferences (optional)
+                      </label>
+                      <textarea
+                        className="w-full bg-gray-800 border border-gray-700 rounded px-3 py-2 text-white"
+                        name="activities"
+                        value={form.activities}
+                        onChange={handleChange}
+                        placeholder="e.g. beach, art museums, local food"
+                        rows={2}
+                      />
+                    </div>
+                    <button
+                      type="submit"
+                      className="mt-2 bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-6 rounded-full shadow-lg transition-all"
+                    >
+                      {editingId !== null ? "Save Changes" : "Add Trip"}
+                    </button>
+                  </>
+                )}
               </form>
             </div>
           </div>
@@ -424,13 +447,13 @@ const TripsPage = () => {
                           <li key={idx}>
                             <span className="font-bold text-white">
                               {act.name}
-                            </span>{' '}
+                            </span>{" "}
                             <span className="text-gray-400">({act.time})</span>
                             <div className="text-gray-300 text-sm">
                               {act.description}
                             </div>
                             <div className="text-gray-400 text-xs">
-                              Price: {act.price} &bull;{' '}
+                              Price: {act.price} &bull;{" "}
                               <a
                                 href={act.mapsUrl}
                                 target="_blank"
@@ -455,7 +478,7 @@ const TripsPage = () => {
                               {food.name}
                             </span>
                             <span className="text-gray-400 text-xs ml-2">
-                              Price: {food.price} &bull;{' '}
+                              Price: {food.price} &bull;{" "}
                               <a
                                 href={food.mapsUrl}
                                 target="_blank"
