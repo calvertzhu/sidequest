@@ -33,7 +33,7 @@ const HeroSection = () => {
       <section className="relative flex flex-col items-center justify-center text-center">
         {/* Background image */}
         <div
-          className="fixed absolute inset-0 bg-no-repeat bg-cover bg-center opacity-50 z-[-5]"
+          className="fixed absolute inset-0 bg-no-repeat bg-black bg-cover bg-center opacity-70 z-[-5]"
           style={{ backgroundImage: `url(${BG})` }}
         ></div>
         <div className="relative z-0 bg-black flex flex-col opacity-70 items-center justify-center text-center py-24 px-4">

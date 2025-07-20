@@ -39,3 +39,5 @@ def get_all_matches():
 
     except Exception as e:
         return jsonify({"error": str(e)}), 400
+
+        

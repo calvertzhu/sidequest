@@ -19,7 +19,7 @@ def create_user():
             gender=data["gender"],
             interests=data.get("interests", []),
             profile_pic=data.get("profile_pic", ""),
-            dietary_restrictions=data.get("dietary_restrictions", ""),
+            dietary_restrictions=data.get("dietary_restrictions", []),
             location=data.get("location", ""),
             travel_dates=data.get("travel_dates", {})  # optional or required, depending on use
         )
@@ -53,6 +53,9 @@ def get_user_by_id(user_id):
             return jsonify({"error": "User not found"}), 404
 
         user["_id"] = str(user["_id"])
+        user["interests"] = user.get("interests", [])
+        user["gender"] = user.get("gender")
+        user["profile_pic"] = user.get("profile_pic")
         if "birthday" in user:
             user["birthday"] = user["birthday"].strftime("%Y-%m-%d")
 
@@ -76,6 +79,9 @@ def get_user_by_email():
             return jsonify({"exists": False}), 200
 
         user["_id"] = str(user["_id"])
+        user["interests"] = user.get("interests", [])
+        user["gender"] = user.get("gender")
+        user["dietary_restrictions"] = user.get("dietary_restrictions", [])
         if "birthday" in user and isinstance(user["birthday"], datetime):
             user["birthday"] = user["birthday"].strftime("%Y-%m-%d")
 

@@ -14,6 +14,8 @@ def create_event():
             name=data["name"],
             location=data["location"],
             time=datetime.strptime(data["time"], "%Y-%m-%dT%H:%M"),
+            price=data["price"],
+            # link=data["link"],
             desc=data.get("desc", ""),
             users=data.get("users", [])
         )

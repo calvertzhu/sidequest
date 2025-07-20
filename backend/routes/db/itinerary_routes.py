@@ -55,3 +55,30 @@ def get_itinerary_events(itinerary_id):
         return jsonify(events), 200
     except Exception as e:
         return jsonify({"error": str(e)}), 400
+
+
+# @itins_bp.route("/itineraries/user/<user_id>/trip", methods=["GET"])
+# def get_itinerary_by_user_and_trip(user_id):
+#     db = current_app.config["DB"]
+#     trip_name = request.args.get("trip_name")
+
+#     if not trip_name:
+#         return jsonify({"error": "Missing required query parameter: trip_name"}), 400
+
+#     try:
+#         itinerary = db.itineraries.find_one({
+#             "user_id": ObjectId(user_id),
+#             "trip_name": trip_name
+#         })
+
+#         if not itinerary:
+#             return jsonify({"error": "Itinerary not found"}), 404
+
+#         itinerary["_id"] = str(itinerary["_id"])
+#         itinerary["user_id"] = str(itinerary["user_id"])
+#         itinerary["event_ids"] = [str(eid) for eid in itinerary.get("event_ids", [])]
+
+#         return jsonify(itinerary), 200
+
+#     except Exception as e:
+#         return jsonify({"error": str(e)}), 400
