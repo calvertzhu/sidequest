@@ -39,11 +39,17 @@ def get_all_matches():
             m["_id"] = str(m["_id"])
             m["user_id"] = str(m["user_id"])
             m["event_id"] = str(m["event_id"])
-            for match in m.get("matches", []):
+
+            # Convert matched_user_id and sort by score descending
+            matches_list = m.get("matches", [])
+            for match in matches_list:
                 match["matched_user_id"] = str(match["matched_user_id"])
+
+            m["matches"] = sorted(matches_list, key=lambda x: x.get("score", 0), reverse=True)
+
         return jsonify(all_matches), 200
 
     except Exception as e:
         return jsonify({"error": str(e)}), 400
 
-        
+
