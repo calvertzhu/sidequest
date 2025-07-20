@@ -7,7 +7,8 @@ import os
 from routes.db.user_routes import users_bp
 from routes.activity_routes import activities_bp
 from routes.db.matches_routes import matches_bp
-from routes.itinerary_routes import itinerary_bp
+from routes.db.saved_routes import saved_bp
+from routes.db.itinerary_routes import itins_bp
 import certifi
 
 # Load environment variables from .env
@@ -34,30 +35,8 @@ db.users.create_index("email", unique=True)
 app.register_blueprint(users_bp, url_prefix="/api")
 app.register_blueprint(activities_bp, url_prefix="/api")
 app.register_blueprint(matches_bp, url_prefix="/api")
-app.register_blueprint(itinerary_bp, url_prefix="/api")
-
-@app.route("/")
-def home():
-    return "Sidequest Backend API - Travel Planning Service"
-
-@app.route("/health")
-def health():
-    return {
-        "status": "healthy",
-        "service": "sidequest_backend",
-        "version": "1.0.0",
-        "endpoints": {
-            "users": "/api/users",
-            "activities": "/api/activities/search",
-            "itinerary": "/api/generate-itinerary",
-            "quick_itinerary": "/api/generate-itinerary/quick"
-        }
-    }
-
-@app.route("/callback")
-def callback():
-    code = request.args.get("code")
-    return f"Authorization code received: {code}"
+app.register_blueprint(saved_bp, url_prefix="/api")
+app.register_blueprint(itins_bp, url_prefix="/api")
 
 if __name__ == "__main__":
     app.run(debug=True, host='0.0.0.0', port=8000)
