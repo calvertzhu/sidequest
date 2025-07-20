@@ -4,17 +4,17 @@ from app.models.itinerary import Itinerary  # adjust path as needed
 
 itins_bp = Blueprint("itineraries", __name__)
 
-def insertItinerary(db, data):
+def insertItinerary(data):
+    db = current_app.config["DB"]
     try:
-        itin_obj = Itinerary(
-            user_id=data["user_id"],
-            location=data["location"],
-            date_from=data["date_range"]["from"],
-            date_to=data["date_range"]["to"],
-            event_ids=data.get("event_ids", []),
-            trip_name = data["trip_name"],
-        )
-        itinerary = itin_obj.to_dict()
+        itinerary = {
+            "user_id": data["user_id"],
+            "location": data["location"],
+            "date_from": data["date_from"],
+            "date_to": data["date_to"],
+            "event_ids": data.get("event_ids", []),
+            "trip_name": data["trip_name"]
+        }
         result = db.itineraries.insert_one(itinerary)
         return jsonify({"_id": str(result.inserted_id)}), 201
     except Exception as e:

@@ -16,7 +16,7 @@ EVENTBRITE_TOKEN = os.getenv("EVENTBRITE_TOKEN")
 
 TICKETMASTER_API_KEY = os.getenv("TICKETMASTER_API_KEY")
 
-@activities_bp.route("/activities/search", methods=["GET"]) 
+@activities_bp.route("/activities/search", methods=["POST"]) 
 def search_activities():
     data = request.get_json()
     user_email = data.get("user_email")
@@ -169,16 +169,19 @@ def search_activities():
 
     db = current_app.config["DB"]
     user_info_res, status = getUserByEmail(db, user_email)
-    user_info = user_info_res.get_json()
-
+    user_info_temp = user_info_res.get_json()
+    user_info = user_info_temp["user"]
     gemini_prompt = generate_itinerary_json(
         location=city,
-        interests=user_info["user"].get("interests", []),
+        interests=user_info.get("interests", []),
         activities_response=response,
         user_info=user_info,
         budget=budget,
         start_date=start_date_str,
-        end_date=end_date_str
+        end_date=end_date_str,
+        user_email=user_email,
+        trip_name=trip_name,
+        user_id=user_info["_id"]
     )
     response["gemini_prompt"] = gemini_prompt
     return jsonify(response), 200

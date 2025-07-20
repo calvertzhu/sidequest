@@ -9,7 +9,7 @@ class Itinerary:
             "to": date_to       # expected as string "YYYY-MM-DD"
         }
         self.event_ids = [ObjectId(eid) for eid in (event_ids or [])]
-        self.trip_name
+        self.trip_name = trip_name
 
     def to_dict(self):
         return {

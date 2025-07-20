@@ -6,6 +6,7 @@ from app.models.event import Event
 events_bp = Blueprint("events", __name__)
 
 def insertEvent(db, data):
+    db = current_app.config["DB"]
     try:
         event_obj = Event(
             name=data["name"],
@@ -16,11 +17,11 @@ def insertEvent(db, data):
             desc=data.get("desc", ""),
             users=data.get("users", [])
         )
-
         event = event_obj.to_dict()
         result = db.events.insert_one(event)
         return jsonify({"_id": str(result.inserted_id)}), 201
     except Exception as e:
+        print(e)
         return jsonify({"error": str(e)}), 400
 
 @events_bp.route("/events", methods=["POST"])
