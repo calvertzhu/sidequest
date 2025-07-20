@@ -71,11 +71,15 @@ export default function App() {
   return (
     <Router>
       <Routes>
+        {isAuthenticated ? (
+          <>
+            <Route path="/profile" element={<ProfilePage />} />
+            <Route path="/trips" element={<TripsPage />} />
+            <Route path="/connect" element={<ConnectPage />} />
+            <Route path="/messages" element={<MessagesPage />} />
+          </>
+        ) : null}
         <Route path="/" element={<LandingPage />} />
-        <Route path="/profile" element={<ProfilePage />} />
-        <Route path="/trips" element={<TripsPage />} />
-        <Route path="/connect" element={<ConnectPage />} />
-        <Route path="/messages" element={<MessagesPage />} />
         <Route path="/login" element={<AuthLogin />} />
       </Routes>
     </Router>
