@@ -1,10 +1,11 @@
 import os
 import requests
-from flask import Blueprint, request, jsonify
+from flask import Blueprint, request, jsonify, current_app
 from dotenv import load_dotenv
 from datetime import datetime
 from .gemini.parsing_activities import parse_activities_smart
-from .gemini.gemini import build_gemini_prompt, generate_itinerary_json
+from .gemini.gemini import generate_itinerary_json
+from routes.db.user_routes import getUserByEmail
 
 load_dotenv()
 
@@ -166,21 +167,13 @@ def search_activities():
         }
     }
 
-    # Fetch user profile from DB if user_email is provided
-    user_info = None
-    if user_email:
-        from flask import current_app
-        db = current_app.config["DB"]
-        user = db.users.find_one({"email": user_email})
-        if user:
-            user_info = user
+    db = current_app.config["DB"]
+    user_info_res, status = getUserByEmail(db, user_email)
+    user_info = user_info_res.get_json()
 
-    # Call build_gemini_prompt and include the prompt in the response
-    
-
-    gemini_prompt = build_gemini_prompt(
+    gemini_prompt = generate_itinerary_json(
         location=city,
-        interests=user_info.get("interests", []) if user_info else [],
+        interests=user_info["user"].get("interests", []),
         activities_response=response,
         user_info=user_info,
         budget=budget,

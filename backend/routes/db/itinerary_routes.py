@@ -4,10 +4,7 @@ from app.models.itinerary import Itinerary  # adjust path as needed
 
 itins_bp = Blueprint("itineraries", __name__)
 
-@itins_bp.route("/itineraries", methods=["POST"])
-def create_itinerary():
-    db = current_app.config["DB"]
-    data = request.json
+def insertItinerary(db, data):
     try:
         itin_obj = Itinerary(
             user_id=data["user_id"],
@@ -22,6 +19,12 @@ def create_itinerary():
         return jsonify({"_id": str(result.inserted_id)}), 201
     except Exception as e:
         return jsonify({"error": str(e)}), 400
+
+@itins_bp.route("/itineraries", methods=["POST"])
+def create_itinerary():
+    db = current_app.config["DB"]
+    data = request.json
+    return insertItinerary(db, data)
 
 @itins_bp.route("/itineraries/user/<user_id>", methods=["GET"])
 def get_user_itineraries(user_id):
