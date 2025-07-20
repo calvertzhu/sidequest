@@ -3,6 +3,7 @@ import requests
 from flask import Blueprint, request, jsonify
 from dotenv import load_dotenv
 from datetime import datetime
+from .gemini.parsing_activities import parse_activities_smart
 
 load_dotenv()
 
@@ -21,12 +22,7 @@ def search_activities():
     city = data.get("location")
     start_date_str = data.get("start_date")
     end_date_str  = data.get("end_date")
-    categories = data.get("categories", [])
-    #this logic should be in front end to give a default budget or just say default is 150 per day
-    # start_date = datetime.strptime(start_date_str, "%Y-%m-%d")
-    # end_date = datetime.strptime(end_date_str, "%Y-%m-%d")
-    # num_days = (end_date - start_date).days
-    # default_budget = num_days * 150
+    categories_input = data.get("categories")  # This can be a string or list
     budget = data.get("budget")
     trip_name = data.get("trip_name")
 
@@ -39,30 +35,45 @@ def search_activities():
     except ValueError:
         return jsonify({"error": "Invalid date format. Use YYYY-MM-DD"}), 400
 
+    # Parse categories using Gemini if it's a string, otherwise use as-is
+    if isinstance(categories_input, str):
+        print(f"Parsing categories from string: {categories_input}")
+        parsed_categories = parse_activities_smart(categories_input)
+        google_categories = parsed_categories.get("google_places_categories", [])
+        ticketmaster_categories = parsed_categories.get("ticketmaster_categories", [])
+        parsing_explanation = parsed_categories.get("explanation", "")
+        print(f"Parsed categories: Google={google_categories}, Ticketmaster={ticketmaster_categories}")
+    else:
+        # If categories is already a list, use it directly
+        google_categories = categories_input or ["restaurant", "tourist_attraction"]
+        ticketmaster_categories = ["music"]  # Default for Ticketmaster
+        parsing_explanation = "Categories provided as list"
+
     results = []
 
-    # Google Places search
-    for category in categories:
+    # Google Places search using parsed categories
+    for category in google_categories:
         url = "https://maps.googleapis.com/maps/api/place/textsearch/json"
         params = {
             "query": f"{category} in {city}",
             "key": GOOGLE_API_KEY
         }
-        res = requests.get(url, params=params).json()
-        for place in res.get("results", []):
-            results.append({
-                "name": place.get("name"),
-                # "type": "place",
-                "tags": [category],
-                "location": city,
-                # "source": "Google",
-                "address": place.get("formatted_address")
-            })
+        try:
+            res = requests.get(url, params=params).json()
+            for place in res.get("results", []):
+                results.append({
+                    "name": place.get("name"),
+                    "tags": [category],
+                    "location": city,
+                    "address": place.get("formatted_address")
+                })
+        except Exception as e:
+            print(f"Error fetching Google Places data for {category}: {e}")
 
     start_datetime = start_date.isoformat() + "Z"
     end_datetime = end_date.isoformat() + "Z"
 
-    # Build category (classification) filter
+    # Build category (classification) filter for Ticketmaster
     segment_ids = {
         "music": "KZFzniwnSyZfZ7v7nJ",
         "sports": "KZFzniwnSyZfZ7v7nE",
@@ -70,8 +81,8 @@ def search_activities():
         "film": "KZFzniwnSyZfZ7v7nn",
         "misc": "KZFzniwnSyZfZ7v7n1"
     }
-
-    classification_filter = ','.join([segment_ids.get(cat.lower(), '') for cat in categories if cat.lower() in segment_ids])
+    
+    classification_filter = ','.join([segment_ids.get(cat.lower(), '') for cat in ticketmaster_categories if cat.lower() in segment_ids])
 
     params = {
         "apikey": TICKETMASTER_API_KEY,
@@ -146,7 +157,13 @@ def search_activities():
         "date_range": [start_date_str, end_date_str],
         "activities": results,
         "budget": budget,
-        "user_email": user_email
+        "user_email": user_email,
+        "parsing_info": {
+            "original_input": categories_input,
+            "google_categories": google_categories,
+            "ticketmaster_categories": ticketmaster_categories,
+            "explanation": parsing_explanation
+        }
     }
 
     return jsonify(response), 200

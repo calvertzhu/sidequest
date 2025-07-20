@@ -1,0 +1,3 @@
+from routes.gemini import generate_itinerary_json
+...
+itinerary = generate_itinerary_json(city, interests, activities)
