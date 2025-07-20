@@ -8,7 +8,8 @@ from routes.db.user_routes import users_bp
 from routes.activity_routes import activities_bp
 from routes.db.matches_routes import matches_bp
 from routes.db.saved_routes import saved_bp
-from routes.db.itinerary_routes import itinerary_bp
+from routes.db.itinerary_routes import itins_bp
+import certifi
 
 # Load environment variables from .env
 load_dotenv()
@@ -35,7 +36,7 @@ app.register_blueprint(users_bp, url_prefix="/api")
 app.register_blueprint(activities_bp, url_prefix="/api")
 app.register_blueprint(matches_bp, url_prefix="/api")
 app.register_blueprint(saved_bp, url_prefix="/api")
-app.register_blueprint(itinerary_bp, url_prefix="/api")
+app.register_blueprint(itins_bp, url_prefix="/api")
 
 if __name__ == "__main__":
     app.run(debug=True, host='0.0.0.0', port=8000)

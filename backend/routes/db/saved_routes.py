@@ -8,7 +8,7 @@ saved_bp = Blueprint("saved", __name__)
 @saved_bp.route("/saved", methods=["POST"])
 def save_user():
     db = current_app.config["DB"]
-     data = request.get_json()
+    data = request.get_json()
     user_id = data.get("user_id")
     saved_user_id = data.get("saved_user_id")
 
