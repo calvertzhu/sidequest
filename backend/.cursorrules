@@ -1,3 +1,0 @@
-# Cursor configuration for Python project
-# Use the virtual environment Python interpreter
-python.defaultInterpreterPath: "/Users/calvert.zhu/sidequest/venv/bin/python" 
