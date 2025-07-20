@@ -1,6 +1,6 @@
 from flask import Blueprint, request, jsonify, current_app
 from bson import ObjectId
-from app.models.match import Match  # adjust import path as needed
+from app.models.matches import Match  # adjust import path as needed
 
 matches_bp = Blueprint("matches", __name__)
 
@@ -22,7 +22,13 @@ def create_match_entry():
 
     except Exception as e:
         return jsonify({"error": str(e)}), 400
+    
+@matches_bp.route("/generate_matches", methods=["POST"])
+def generate_matches():
+    db = current_app.config["DB"]
+    data = request.get_json()
 
+    return "Success"
 
 @matches_bp.route("/matches", methods=["GET"])
 def get_all_matches():
@@ -39,3 +45,5 @@ def get_all_matches():
 
     except Exception as e:
         return jsonify({"error": str(e)}), 400
+
+        

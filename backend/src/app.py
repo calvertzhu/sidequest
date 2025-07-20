@@ -6,6 +6,7 @@ from dotenv import load_dotenv
 import os
 from routes.db.user_routes import users_bp
 from routes.activity_routes import activities_bp
+from routes.db.matches_routes import matches_bp
 from routes.itinerary_routes import itinerary_bp
 import certifi
 
@@ -32,6 +33,7 @@ db.users.create_index("email", unique=True)
 # Register the blueprints
 app.register_blueprint(users_bp, url_prefix="/api")
 app.register_blueprint(activities_bp, url_prefix="/api")
+app.register_blueprint(matches_bp, url_prefix="/api")
 app.register_blueprint(itinerary_bp, url_prefix="/api")
 
 @app.route("/")

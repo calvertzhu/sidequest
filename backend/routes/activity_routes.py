@@ -18,7 +18,7 @@ TICKETMASTER_API_KEY = os.getenv("TICKETMASTER_API_KEY")
 @activities_bp.route("/activities/search", methods=["GET"])
 def search_activities():
     data = request.get_json()
-
+    user_email = data.get("user_email")
     city = data.get("location")
     start_date_str = data.get("start_date")
     end_date_str  = data.get("end_date")
@@ -105,13 +105,25 @@ def search_activities():
     events = data.get("_embedded", {}).get("events", [])
 
     for e in events:
+        # Handle price
+        price_info = e.get("priceRanges", [])
+        if price_info and isinstance(price_info, list):
+            price = {
+                "min": price_info[0].get("min"),
+                "max": price_info[0].get("max"),
+                "currency": price_info[0].get("currency")
+            }
+        else:
+            price = {}
+
         results.append({
             "name": e.get("name"),
             # "url": e.get("url"),
             "start_date": e.get("dates", {}).get("start", {}).get("localDate"),
             "start_time": e.get("dates", {}).get("start", {}).get("localTime"),
             "address": e.get("_embedded", {}).get("venues", [{}])[0].get("name"),
-            "location": e.get("_embedded", {}).get("venues", [{}])[0].get("city", {}).get("name")
+            "location": e.get("_embedded", {}).get("venues", [{}])[0].get("city", {}).get("name"),
+             "price": price
         })
 
     # # Eventbrite search
@@ -144,6 +156,8 @@ def search_activities():
         "location": city,
         "date_range": [start_date_str, end_date_str],
         "activities": results,
+        "budget": budget,
+        "user_email": user_email,
         "parsing_info": {
             "original_input": categories_input,
             "google_categories": google_categories,
