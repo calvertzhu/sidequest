@@ -248,9 +248,9 @@ const ProfilePage = () => {
           <div className="flex flex-col md:flex-row items-center gap-8 mb-8">
             <div className="flex flex-col items-center">
               <div className="w-32 h-32 rounded-full bg-gray-700 flex items-center justify-center text-5xl mb-2 overflow-hidden">
-                {profile.profilePic ? (
+                {user != undefined ? (
                   <img
-                    src={profile.profilePic}
+                    src={user.picture}
                     alt="Profile"
                     className="object-cover w-full h-full"
                   />
