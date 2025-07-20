@@ -1,0 +1,90 @@
+{
+  "available_activities": 729,
+  "itinerary": {
+    "day_1": {
+      "afternoon": [
+        {
+          "description": "Wander through Fisherman's Wharf, grab some fresh seafood, and enjoy the lively atmosphere.",
+          "end_time": "15:00",
+          "location": "Fisherman's Wharf, San Francisco",
+          "name": "Explore Fisherman's Wharf",
+          "start_time": "12:30"
+        },
+        {
+          "description": "See the famous sea lions at Pier 39 and enjoy the shops and entertainment.",
+          "end_time": "17:00",
+          "location": "Pier 39, San Francisco",
+          "name": "Explore Pier 39",
+          "start_time": "15:00"
+        }
+      ],
+      "evening": [
+        {
+          "description": "Enjoy a delicious and diverse meal in San Francisco's vibrant Chinatown.",
+          "end_time": "20:00",
+          "location": "Chinatown San Francisco, Stockton St, San Francisco, CA 94108",
+          "name": "Dinner in Chinatown",
+          "start_time": "18:00"
+        }
+      ],
+      "morning": [
+        {
+          "description": "Take an early ferry to Alcatraz Island and explore the infamous former prison. Book tickets in advance!",
+          "end_time": "12:00",
+          "location": "Pier 33, San Francisco",
+          "name": "Ferry to Alcatraz (Not included in provided list, but a classic SF experience)",
+          "start_time": "08:00"
+        }
+      ]
+    },
+    "day_2": {
+      "afternoon": [
+        {
+          "description": "Experience the counter-culture history and vibrant shops of the Haight-Ashbury District.",
+          "end_time": "16:00",
+          "location": "Haight-Ashbury District, San Francisco",
+          "name": "Explore the Haight-Ashbury District",
+          "start_time": "13:00"
+        }
+      ],
+      "evening": [
+        {
+          "description": "Check out a local music venue in the Mission District or another neighborhood for a taste of San Francisco's music scene.",
+          "end_time": "22:00",
+          "location": "Mission District or similar, San Francisco",
+          "name": "Live Music at a Local Venue (Not in provided list)",
+          "start_time": "19:00"
+        }
+      ],
+      "morning": [
+        {
+          "description": "Rent a bike or walk through Golden Gate Park, visiting the Japanese Tea Garden or the California Academy of Sciences (separate admission fees apply).",
+          "end_time": "12:00",
+          "location": "Golden Gate Park, San Francisco",
+          "name": "Golden Gate Park Exploration",
+          "start_time": "09:00"
+        }
+      ]
+    }
+  },
+  "success": true,
+  "trip_info": {
+    "budget": "medium",
+    "end_date": "2024-06-22",
+    "location": "San Francisco",
+    "start_date": "2024-06-20"
+  },
+  "user_info": {
+    "age": 36,
+    "dietary_restrictions": "none",
+    "gender": "male",
+    "interests": [
+      "food",
+      "art",
+      "music",
+      "outdoor activities"
+    ],
+    "location": "Austin, TX",
+    "name": "Gemini Parsing Test User"
+  }
+}
