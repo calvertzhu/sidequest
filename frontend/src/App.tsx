@@ -12,8 +12,36 @@ import api from "./api";
 export default function App() {
   const { user, isAuthenticated, isLoading } = useAuth0();
 
+  const createUserifNotExists = async () => {
+    var userExists;
+    var userPosted;
+    if (user != undefined) {
+      userExists = await api.get(`/users/search?email=${user.email}`);
+
+      if (!userExists.data.exists) {
+        userPosted = await api.post("/users", {
+          name: user.name,
+          email: user.email,
+          birthday: "1995-04-12",
+          gender: "female",
+          interests: ["books", "travel", "yoga"],
+          profile_pic: "https://example.com/pics/sarah.jpg",
+          dietary_restrictions: "vegetarian",
+          location: "Toronto",
+          travel_dates: {
+            from: "2025-09-01",
+            to: "2025-09-10",
+          },
+        });
+      }
+      console.log(userPosted);
+    }
+  };
+
   useEffect(() => {
-    if (!isLoading) console.log(isLoading);
+    if (!isLoading) {
+      createUserifNotExists();
+    }
   }, [isLoading]);
 
   if (isLoading) {
