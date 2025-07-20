@@ -15,7 +15,7 @@ EVENTBRITE_TOKEN = os.getenv("EVENTBRITE_TOKEN")
 TICKETMASTER_API_KEY = os.getenv("TICKETMASTER_API_KEY")
 
 
-@activities_bp.route("/activities/search", methods=["GET"])
+@activities_bp.route("/activities/search", methods=["POST"])
 def search_activities():
     data = request.get_json()
     user_email = data.get("user_email")
@@ -27,7 +27,7 @@ def search_activities():
     trip_name = data.get("trip_name")
 
     if not city or not start_date_str or not end_date_str:
-        return jsonify({"error": "Missing required fields"}), 400
+        return jsonify(not city), 400
 
     try:
         start_date = datetime.strptime(start_date_str, "%Y-%m-%d")

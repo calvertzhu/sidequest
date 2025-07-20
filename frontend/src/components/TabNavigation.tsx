@@ -1,13 +1,13 @@
-import { useAuth0 } from '@auth0/auth0-react';
-import React from 'react';
-import { Link } from 'react-router-dom';
+import { useAuth0 } from "@auth0/auth0-react";
+import React from "react";
+import { Link } from "react-router-dom";
 
 const tabs = [
-  { key: 'dashboard', label: 'Dashboard' },
-  { key: 'profile', label: 'Profile' },
-  { key: 'trips', label: 'Trips' },
-  { key: 'connect', label: 'Connect' },
-  { key: 'messages', label: 'Messages' },
+  { key: "dashboard", label: "Dashboard" },
+  { key: "profile", label: "Profile" },
+  { key: "trips", label: "Trips" },
+  { key: "connect", label: "Connect" },
+  { key: "messages", label: "Messages" },
 ];
 
 interface TabNavigationProps {
@@ -27,12 +27,12 @@ const TabNavigation: React.FC<TabNavigationProps> = ({ activeTab }) => {
           {tabs.map((tab) => (
             <Link
               key={tab.key}
-              to={tab.key === 'dashboard' ? '/' : `/${tab.key}`}
+              to={tab.key === "dashboard" ? "/" : `/${tab.key}`}
               className={`px-4 py-2 rounded-md font-medium transition-colors text-sm md:text-base
               ${
                 activeTab === tab.key
-                  ? 'bg-blue-600 text-white shadow-md'
-                  : 'text-gray-300 hover:bg-gray-800 hover:text-blue-400'
+                  ? "bg-blue-600 text-white shadow-md"
+                  : "text-gray-300 hover:bg-gray-800 hover:text-blue-400"
               }`}
             >
               {tab.label}
