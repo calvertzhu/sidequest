@@ -1,25 +1,25 @@
-import React from 'react';
+import React from "react";
 
 const steps = [
   {
-    icon: '📝',
-    title: 'Create Your Profile',
-    desc: 'Tell us about yourself and your travel interests.',
+    icon: "📝",
+    title: "Create Your Profile",
+    desc: "Tell us about yourself and your travel interests.",
   },
   {
-    icon: '🗓️',
-    title: 'Enter Trip Details',
-    desc: 'Add your travel dates, budget, and preferences.',
+    icon: "🗓️",
+    title: "Enter Trip Details",
+    desc: "Add your travel dates, budget, and preferences.",
   },
   {
-    icon: '🌍',
-    title: 'Get Your Plan & Connect',
-    desc: 'Receive a custom itinerary and meet fellow travelers.',
+    icon: "🌍",
+    title: "Get Your Plan & Connect",
+    desc: "Receive a custom itinerary and meet fellow travelers.",
   },
 ];
 
 const HowItWorks = () => (
-  <section className="py-16 px-4 bg-gray-900">
+  <section className="bg-gray-900 py-16 px-4 bg-gray bg-gray-90">
     <h2 className="text-3xl md:text-4xl font-bold text-center mb-10 text-white">
       How It Works
     </h2>

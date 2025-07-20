@@ -18,7 +18,7 @@ const TabNavigation: React.FC<TabNavigationProps> = ({ activeTab }) => {
   const { loginWithRedirect, isAuthenticated, logout } = useAuth0();
 
   return (
-    <div className="mx-4 flex items-center bg-gray-950 border-b border-gray-800 shadow-lg sticky top-0 z-20">
+    <div className="flex items-center bg-gray-950 border-b border-gray-800 shadow-lg sticky top-0 z-20">
       <div className="flex-1 mx-auto px-4 flex items-center h-16">
         <div className="font-extrabold text-2xl text-blue-400 tracking-tight mr-8 select-none">
           Sidequest
@@ -41,7 +41,7 @@ const TabNavigation: React.FC<TabNavigationProps> = ({ activeTab }) => {
         </div>
       </div>
 
-      <div className="mx-auto flex justify-center">
+      <div className="mr-4 mx-auto flex justify-center">
         {isAuthenticated ? (
           <div
             onClick={() =>
