@@ -33,6 +33,44 @@ def create_user():
         return jsonify({"error": str(e)}), 400
 
 
+@users_bp.route("/users/<email>", methods=["PUT"])
+def update_user_by_email(email):
+    db = current_app.config["DB"]
+    data = request.json
+
+    try:
+        # Check if user exists
+        existing_user = db.users.find_one({"email": email})
+        if not existing_user:
+            return jsonify({"error": "User not found"}), 404
+
+        # Prepare update data
+        update_data = {
+            "name": data.get("name", existing_user.get("name", "")),
+            "birthday": datetime.strptime(data["birthday"], "%Y-%m-%d") if data.get("birthday") else existing_user.get("birthday"),
+            "gender": data.get("gender", existing_user.get("gender", "")),
+            "interests": data.get("interests", existing_user.get("interests", [])),
+            "profile_pic": data.get("profile_pic", existing_user.get("profile_pic", "")),
+            "dietary_restrictions": data.get("dietary_restrictions", existing_user.get("dietary_restrictions", "")),
+            "location": data.get("location", existing_user.get("location", "")),
+            "travel_dates": data.get("travel_dates", existing_user.get("travel_dates", {}))
+        }
+
+        # Update user in database
+        result = db.users.update_one(
+            {"email": email},
+            {"$set": update_data}
+        )
+
+        if result.modified_count > 0:
+            return jsonify({"message": "User updated successfully"}), 200
+        else:
+            return jsonify({"message": "No changes made"}), 200
+
+    except Exception as e:
+        return jsonify({"error": str(e)}), 400
+
+
 @users_bp.route("/get_all_users", methods=["GET"])
 def get_all_users():
     db = current_app.config["DB"]
