@@ -71,7 +71,19 @@ const ConnectPage = () => {
   };
 
   const handleSkip = () => handleSwipe('left');
-  const handleConnect = () => handleSwipe('right');
+  const handleConnect = () => {
+    // Save user to localStorage
+    type SavedUser = { id: string; name: string };
+    const saved: SavedUser[] = JSON.parse(
+      localStorage.getItem('savedUsers') || '[]'
+    );
+    const currentUser = mockMatches[currentIndex];
+    if (!saved.find((u) => u.id === currentUser.id)) {
+      saved.push({ id: currentUser.id, name: currentUser.name });
+      localStorage.setItem('savedUsers', JSON.stringify(saved));
+    }
+    handleSwipe('right');
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-900 to-gray-800 text-white flex flex-col">
