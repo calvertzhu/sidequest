@@ -194,6 +194,6 @@ def search_activities():
     end_date=end_date_str
     )
 
-    response["gemini_prompt"] = gemini_prompt
     response["itinerary"] = itinerary
+    
     return jsonify(response), 200

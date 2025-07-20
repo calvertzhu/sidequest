@@ -3,7 +3,6 @@ import json
 import google.generativeai as genai
 from dotenv import load_dotenv
 from datetime import datetime
-
 from routes.db.event_routes import insertEvent, updateEventWithUser, getEventByDetails
 from routes.db.itinerary_routes import insertItinerary
 from routes.db.user_routes import getUserByEmail, getUserById
@@ -27,6 +26,7 @@ def build_gemini_prompt(location, interests, activities_response, user_info=None
         start_date: Trip start date
         end_date: Trip end date
     """
+    
 
     # Extract activities from the response
 
@@ -48,7 +48,7 @@ Traveler Profile:
 - Name: {user_info.get('name', 'Unknown')}
 - Age: {user_info.get('age', 'Not specified')}
 - Gender: {user_info.get('gender', 'Not specified')}
-- Dietary Restrictions: {user_info.get('dietary_restrictions', [])}
+- Dietary Restrictions: {user_info.get('dietary_restrictions', 'None')}
 - Home Location: {user_info.get('location', 'Not specified')}
 - Travel Style: Based on interests in {', '.join(interests)}
 
@@ -90,7 +90,7 @@ Return the itinerary in **JSON format**. Each activity must include:
 - start_time (e.g. "09:00")
 - end_time (e.g. "11:00")
 
-The format must be:
+The format **must** be:
 [
   {{
     "name": "activity name",
@@ -184,8 +184,6 @@ def generate_itinerary_json(location, interests, activities_response, user_info=
                     continue
                 user = getUserById(db, user)
                 save_langchain_match_to_db(db, user_info, user, event["_id"])
-            
-
         return itinerary_json
     except Exception as e:
         raise RuntimeError(f"Gemini failed: {str(e)}")
