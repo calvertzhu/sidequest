@@ -171,16 +171,7 @@ def search_activities():
     user_info_res, status = getUserByEmail(db, user_email)
     user_info = user_info_res.get_json()
 
-    gemini_prompt = generate_itinerary_json(
-        location=city,
-        interests=user_info["user"].get("interests", []),
-        activities_response=response,
-        user_info=user_info,
-        budget=budget,
-        start_date=start_date_str,
-        end_date=end_date_str
-    )
-
+ 
     itinerary = generate_itinerary_json(
     location=city,
     interests=user_info.get("interests", []) if user_info else [],
@@ -191,6 +182,6 @@ def search_activities():
     end_date=end_date_str
     )
 
-    response["gemini_prompt"] = gemini_prompt
     response["itinerary"] = itinerary
+    
     return jsonify(response), 200
