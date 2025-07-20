@@ -28,7 +28,7 @@ def test_activity_routes_direct():
     }
     
     try:
-        response = requests.get(f"{BASE_URL}/activities/search", json=string_data)
+        response = requests.get(f"{BASE_URL}/activities/search", params=string_data)
         if response.status_code == 200:
             result = response.json()
             parsing_info = result.get("parsing_info", {})
@@ -54,7 +54,7 @@ def test_activity_routes_direct():
     }
     
     try:
-        response = requests.get(f"{BASE_URL}/activities/search", json=list_data)
+        response = requests.get(f"{BASE_URL}/activities/search", params=list_data)
         if response.status_code == 200:
             result = response.json()
             parsing_info = result.get("parsing_info", {})
@@ -77,7 +77,7 @@ def test_activity_routes_direct():
     }
     
     try:
-        response = requests.get(f"{BASE_URL}/activities/search", json=complex_data)
+        response = requests.get(f"{BASE_URL}/activities/search", params=complex_data)
         if response.status_code == 200:
             result = response.json()
             parsing_info = result.get("parsing_info", {})
@@ -109,7 +109,7 @@ def test_activity_routes_direct():
     }
     
     try:
-        response = requests.get(f"{BASE_URL}/activities/search", json=empty_data)
+        response = requests.get(f"{BASE_URL}/activities/search", params=empty_data)
         if response.status_code == 200:
             result = response.json()
             parsing_info = result.get("parsing_info", {})
@@ -132,7 +132,7 @@ def test_activity_routes_direct():
     }
     
     try:
-        response = requests.get(f"{BASE_URL}/activities/search", json=sports_data)
+        response = requests.get(f"{BASE_URL}/activities/search", params=sports_data)
         if response.status_code == 200:
             result = response.json()
             parsing_info = result.get("parsing_info", {})
@@ -160,7 +160,7 @@ def test_response_structure():
     }
     
     try:
-        response = requests.get(f"{BASE_URL}/activities/search", json=test_data)
+        response = requests.get(f"{BASE_URL}/activities/search", params=test_data)
         if response.status_code == 200:
             result = response.json()
             
@@ -206,7 +206,7 @@ def test_error_handling():
     }
     
     try:
-        response = requests.get(f"{BASE_URL}/activities/search", json=invalid_data)
+        response = requests.get(f"{BASE_URL}/activities/search", params=invalid_data)
         if response.status_code == 400:
             print("✅ Properly handled missing fields")
         else:
@@ -224,7 +224,7 @@ def test_error_handling():
     }
     
     try:
-        response = requests.get(f"{BASE_URL}/activities/search", json=invalid_date_data)
+        response = requests.get(f"{BASE_URL}/activities/search", params=invalid_date_data)
         if response.status_code == 400:
             print("✅ Properly handled invalid date format")
         else:

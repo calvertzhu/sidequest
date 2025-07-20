@@ -62,7 +62,7 @@ def test_category_parsing():
         }
         
         try:
-            response = requests.get(f"{BASE_URL}/activities/search", json=activity_data)
+            response = requests.get(f"{BASE_URL}/activities/search", params=activity_data)
             if response.status_code == 200:
                 result = response.json()
                 
@@ -114,7 +114,7 @@ def test_comparison_with_list_input():
     
     print("Testing string input...")
     try:
-        string_response = requests.get(f"{BASE_URL}/activities/search", json=string_data)
+        string_response = requests.get(f"{BASE_URL}/activities/search", params=string_data)
         if string_response.status_code == 200:
             string_result = string_response.json()
             string_parsing = string_result.get("parsing_info", {})
@@ -127,7 +127,7 @@ def test_comparison_with_list_input():
     
     print("\nTesting list input...")
     try:
-        list_response = requests.get(f"{BASE_URL}/activities/search", json=list_data)
+        list_response = requests.get(f"{BASE_URL}/activities/search", params=list_data)
         if list_response.status_code == 200:
             list_result = list_response.json()
             list_parsing = list_result.get("parsing_info", {})
@@ -175,7 +175,7 @@ def test_edge_cases():
         }
         
         try:
-            response = requests.get(f"{BASE_URL}/activities/search", json=activity_data)
+            response = requests.get(f"{BASE_URL}/activities/search", params=activity_data)
             if response.status_code == 200:
                 result = response.json()
                 parsing_info = result.get("parsing_info", {})

@@ -240,23 +240,30 @@ def generate_langchain_match_analysis(user1: Dict[str, Any], user2: Dict[str, An
         print(f"LangChain analysis failed: {str(e)}. Using fallback algorithm...")
         return fallback_match_analysis(user1, user2)
 
-def get_match_summary(match_analysis: MatchAnalysis) -> Dict[str, Any]:
-    """Extract a simple summary from the match analysis."""
+def get_match_summary(match_analysis: MatchAnalysis, user_id: str = None) -> Dict[str, Any]:
+    """Extract only user_id and match score from the match analysis."""
     overall_score = match_analysis.overall_match_score
-    recommendation = match_analysis.recommendation
-    
-    if overall_score >= 80:
-        match_level = "Excellent Match"
-    elif overall_score >= 60:
-        match_level = "Good Match"
-    elif overall_score >= 40:
-        match_level = "Fair Match"
-    else:
-        match_level = "Poor Match"
     
     return {
-        "match_level": match_level,
-        "overall_score": overall_score,
-        "recommendation": recommendation,
-        "analysis_method": match_analysis.analysis_method
-    } 
+        "user_id": user_id,
+        "match_score": overall_score
+    }
+
+def get_simplified_match_result(user1: Dict[str, Any], user2: Dict[str, Any], user2_id: str = None) -> Dict[str, Any]:
+    """Generate match analysis and return only user_id and match score."""
+    match_analysis = generate_langchain_match_analysis(user1, user2)
+    return get_match_summary(match_analysis, user2_id)
+
+def get_multiple_matches_simplified(current_user: Dict[str, Any], potential_matches: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
+    """Get simplified match results for multiple users (user_id and match_score only)."""
+    results = []
+    
+    for potential_match in potential_matches:
+        user_id = potential_match.get('_id') or potential_match.get('user_id')
+        match_result = get_simplified_match_result(current_user, potential_match, user_id)
+        results.append(match_result)
+    
+    # Sort by match score (highest first)
+    results.sort(key=lambda x: x['match_score'], reverse=True)
+    
+    return results 

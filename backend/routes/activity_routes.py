@@ -14,7 +14,6 @@ EVENTBRITE_TOKEN = os.getenv("EVENTBRITE_TOKEN")
 
 TICKETMASTER_API_KEY = os.getenv("TICKETMASTER_API_KEY")
 
-
 @activities_bp.route("/activities/search", methods=["GET"])
 def search_activities():
     data = request.get_json()
