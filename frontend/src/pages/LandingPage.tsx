@@ -1,13 +1,13 @@
-import React, { useEffect } from "react";
-import HeroSection from "../components/HeroSection";
-import HowItWorks from "../components/HowItWorks";
-import Features from "../components/Features";
-import Testimonials from "../components/Testimonials";
-import Footer from "../components/Footer";
-import TabNavigation from "../components/TabNavigation";
-import "../images/landscape.png";
-import axios from "axios";
-import api from "../api";
+import React, { useEffect } from 'react';
+import HeroSection from '../components/HeroSection';
+import HowItWorks from '../components/HowItWorks';
+import Features from '../components/Features';
+import Testimonials from '../components/Testimonials';
+import Footer from '../components/Footer';
+import TabNavigation from '../components/TabNavigation';
+import '../images/landscape.png';
+import axios from 'axios';
+import api from '../api';
 
 const LandingPage = () => {
   return (
