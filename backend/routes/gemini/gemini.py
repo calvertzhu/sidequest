@@ -24,6 +24,9 @@ def build_gemini_prompt(location, interests, activities_response, user_info=None
     """
     
     # Extract activities from the response
+
+    print("using Gemini to generate itinerary")
+    
     activities = activities_response.get('activities', [])
     
     # Format activities for the prompt
@@ -36,7 +39,7 @@ def build_gemini_prompt(location, interests, activities_response, user_info=None
     user_context = ""
     if user_info:
         user_context = f"""
-Traveler Profile:
+Traveler Profile: 
 - Name: {user_info.get('name', 'Unknown')}
 - Age: {user_info.get('age', 'Not specified')}
 - Gender: {user_info.get('gender', 'Not specified')}
@@ -73,7 +76,7 @@ Instructions:
 2. Consider the traveler's interests and dietary restrictions
 3. Mix different types of activities (cultural, food, entertainment, outdoor)
 4. Ensure activities are geographically logical (group nearby locations)
-5. Include appropriate timing for each activity
+5. Include appropriate timing for each activity and leave 1 hour between activities for travel time
 
 Return the itinerary in **JSON format**. Each activity must include:
 - name
@@ -83,26 +86,16 @@ Return the itinerary in **JSON format**. Each activity must include:
 - end_time (e.g. "11:00")
 
 The format must be:
-
-{{
-  "day_1": {{
-    "morning": [
-      {{
-        "name": "activity name",
-        "description": "short description",
-        "location": "address or venue",
-        "start_time": "HH:MM",
-        "end_time": "HH:MM"
-      }},
-      ...
-    ],
-    "afternoon": [ ... ],
-    "evening": [ ... ]
-  }},
-  "day_2": {{
-    ...
-  }}
-}}
+[
+  {
+    "name": "activity name",
+    "description": "short description",
+    "location": "address or venue",
+    "start_time": "HH:MM",
+    "end_time": "HH:MM"
+  },
+  ...
+]
 
 Only return valid JSON. No commentary or markdown.
 """

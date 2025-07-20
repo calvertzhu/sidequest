@@ -4,7 +4,7 @@ from flask import Blueprint, request, jsonify
 from dotenv import load_dotenv
 from datetime import datetime
 from .gemini.parsing_activities import parse_activities_smart
-
+from .gemini.gemini import build_gemini_prompt
 load_dotenv()
 
 activities_bp = Blueprint("activities", __name__)
@@ -14,8 +14,7 @@ EVENTBRITE_TOKEN = os.getenv("EVENTBRITE_TOKEN")
 
 TICKETMASTER_API_KEY = os.getenv("TICKETMASTER_API_KEY")
 
-
-@activities_bp.route("/activities/search", methods=["POST"])
+@activities_bp.route("/activities/search", methods=["GET"]) 
 def search_activities():
     data = request.get_json()
     user_email = data.get("user_email")
@@ -27,7 +26,7 @@ def search_activities():
     trip_name = data.get("trip_name")
 
     if not city or not start_date_str or not end_date_str:
-        return jsonify(not city), 400
+        return jsonify({"error": "Missing required fields"}), 400
 
     try:
         start_date = datetime.strptime(start_date_str, "%Y-%m-%d")
@@ -166,4 +165,26 @@ def search_activities():
         }
     }
 
+    # Fetch user profile from DB if user_email is provided
+    user_info = None
+    if user_email:
+        from flask import current_app
+        db = current_app.config["DB"]
+        user = db.users.find_one({"email": user_email})
+        if user:
+            user_info = user
+
+    # Call build_gemini_prompt and include the prompt in the response
+    
+
+    gemini_prompt = build_gemini_prompt(
+        location=city,
+        interests=user_info.get("interests", []) if user_info else [],
+        activities_response=response,
+        user_info=user_info,
+        budget=budget,
+        start_date=start_date_str,
+        end_date=end_date_str
+    )
+    response["gemini_prompt"] = gemini_prompt
     return jsonify(response), 200

@@ -47,16 +47,16 @@ def create_match_prompt_template() -> ChatPromptTemplate:
     template = """You are an expert travel compatibility analyst. Your job is to analyze how well two travelers would match as travel companions.
 
 User 1 Profile:
-- Name: {user1_name}
-- Interests: {user1_interests}
-- Location: {user1_location}
-- Travel Dates: {user1_dates}
+- Name: {user.get('user_id', 'Unknown')}
+- Interests: {user.get('interests', [])}
+- Location: {user.get('location', 'Unknown')}
+- Travel Dates: {user.get('travel_dates', 'Unknown')}
 
 User 2 Profile:
-- Name: {user2_name}
-- Interests: {user2_interests}
-- Location: {user2_location}
-- Travel Dates: {user2_dates}
+- Name: {user.get('matched_user_id', 'Unknown')}
+- Interests: {user.get('interests', [])}
+- Location: {user.get('location', 'Unknown')}
+- Travel Dates: {user.get('travel_dates', 'Unknown')}
 
 Analyze their compatibility based on:
 
@@ -247,4 +247,7 @@ def get_match_summary(match_analysis: MatchAnalysis, user_id: str = None, matche
         "user_id": user_id,
         "matched_user_id": matched_user_id,
         "match_score": overall_score
-    } 
+    }  
+
+
+
