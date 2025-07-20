@@ -87,13 +87,13 @@ Return the itinerary in **JSON format**. Each activity must include:
 
 The format must be:
 [
-  {
+  {{
     "name": "activity name",
     "description": "short description",
     "location": "address or venue",
     "start_time": "HH:MM",
     "end_time": "HH:MM"
-  },
+  }},
   ...
 ]
 
