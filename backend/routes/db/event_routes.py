@@ -13,7 +13,7 @@ def create_event():
         event_obj = Event(
             name=data["name"],
             location=data["location"],
-            time=data["time"],
+            time=datetime.strptime(data["time"], "%Y-%m-%dT%H:%M"),
             desc=data.get("desc", ""),
             users=data.get("users", [])
         )
@@ -85,8 +85,8 @@ def get_events():
 
     return jsonify(events), 200
 
-@events_bp.route("/events/check-exists", methods=["GET"])
-def check_event_exists():
+@events_bp.route("/events/search", methods=["GET"])
+def search_event_by_details():
     db = current_app.config["DB"]
     name = request.args.get("name")
     location = request.args.get("location")
@@ -103,9 +103,14 @@ def check_event_exists():
             "time": event_time
         })
 
-        exists = event is not None
-        return jsonify({"exists": exists}), 200
+        if not event:
+            return jsonify({"exists": False}), 200
+
+        event["_id"] = str(event["_id"])
+        event["time"] = event["time"].strftime("%Y-%m-%dT%H:%M")
+        return jsonify({"exists": True, "event": event}), 200
 
     except Exception as e:
         return jsonify({"error": str(e)}), 400
+
 

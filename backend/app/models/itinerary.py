@@ -9,11 +9,13 @@ class Itinerary:
             "to": date_to       # expected as string "YYYY-MM-DD"
         }
         self.event_ids = [ObjectId(eid) for eid in (event_ids or [])]
+        self.trip_name
 
     def to_dict(self):
         return {
             "user_id": self.user_id,
             "location": self.location,
             "date_range": self.date_range,
-            "event_ids": self.event_ids
+            "event_ids": self.event_ids,
+            "trip_name": self.trip_name
         }

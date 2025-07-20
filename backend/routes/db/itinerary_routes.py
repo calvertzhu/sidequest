@@ -14,7 +14,8 @@ def create_itinerary():
             location=data["location"],
             date_from=data["date_range"]["from"],
             date_to=data["date_range"]["to"],
-            event_ids=data.get("event_ids", [])
+            event_ids=data.get("event_ids", []),
+            trip_name = data["trip_name"],
         )
         itinerary = itin_obj.to_dict()
         result = db.itineraries.insert_one(itinerary)
@@ -31,6 +32,7 @@ def get_user_itineraries(user_id):
             itin["_id"] = str(itin["_id"])
             itin["user_id"] = str(itin["user_id"])
             itin["event_ids"] = [str(eid) for eid in itin["event_ids"]]
+            itin["trip_name"] = str(itin["trip_name"])
         return jsonify(itineraries), 200
     except Exception as e:
         return jsonify({"error": str(e)}), 400
@@ -44,6 +46,8 @@ def get_itinerary_events(itinerary_id):
             return jsonify({"error": "Itinerary not found"}), 404
 
         events = list(db.events.find({"_id": {"$in": itinerary["event_ids"]}}))
+        events.sort(key=lambda e: e.get("time", None))
+
         for event in events:
             event["_id"] = str(event["_id"])
             event["time"] = event["time"].strftime("%Y-%m-%dT%H:%M")
