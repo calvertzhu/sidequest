@@ -81,10 +81,7 @@ def get_all_users():
             user["birthday"] = user["birthday"].strftime("%Y-%m-%d")
     return jsonify(users), 200
 
-@users_bp.route("/users/<user_id>", methods=["GET"])
-def get_user_by_id(user_id):
-    db = current_app.config["DB"]
-
+def getUserById(db, user_id):
     try:
         user = db.users.find_one({"_id": ObjectId(user_id)})
         if not user:
@@ -101,6 +98,11 @@ def get_user_by_id(user_id):
 
     except Exception as e:
         return jsonify({"error": str(e)}), 400
+
+@users_bp.route("/users/<user_id>", methods=["GET"])
+def get_user_by_id(user_id):
+    db = current_app.config["DB"]
+    return getUserById(db, user_id)
 
 def getUserByEmail(db, email):
     if not email:

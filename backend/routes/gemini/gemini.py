@@ -6,7 +6,7 @@ from datetime import datetime
 
 from routes.db.event_routes import insertEvent, updateEventWithUser, getEventByDetails
 from routes.db.itinerary_routes import insertItinerary
-from routes.db.user_routes import getUserByEmail
+from routes.db.user_routes import getUserByEmail, getUserById
 
 load_dotenv()
 
@@ -175,6 +175,17 @@ def generate_itinerary_json(location, interests, activities_response, user_info=
             "trip_name":trip_name
         }
         insertItinerary(data)
+        db = current_app.config["DB"]
+
+        for event in events:
+            for user in event["users"]:
+                print(user)
+                if user == user_id:
+                    continue
+                user = getUserById(db, user)
+                save_langchain_match_to_db(db, user_info, user["_id"])
+            
+
         return itinerary_json
     except Exception as e:
         raise RuntimeError(f"Gemini failed: {str(e)}")
