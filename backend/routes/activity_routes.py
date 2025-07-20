@@ -4,8 +4,8 @@ from flask import Blueprint, request, jsonify, current_app
 from dotenv import load_dotenv
 from datetime import datetime
 from .gemini.parsing_activities import parse_activities_smart
-from .gemini.gemini import generate_itinerary_json
 from routes.db.user_routes import getUserByEmail
+from .gemini.gemini import build_gemini_prompt, generate_itinerary_json
 
 load_dotenv()
 
@@ -183,5 +183,17 @@ def search_activities():
         trip_name=trip_name,
         user_id=user_info["_id"]
     )
+
+    itinerary = generate_itinerary_json(
+    location=city,
+    interests=user_info.get("interests", []) if user_info else [],
+    activities_response=response,
+    user_info=user_info,
+    budget=budget,
+    start_date=start_date_str,
+    end_date=end_date_str
+    )
+
     response["gemini_prompt"] = gemini_prompt
+    response["itinerary"] = itinerary
     return jsonify(response), 200
