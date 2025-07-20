@@ -12,7 +12,6 @@ createRoot(document.getElementById("root")!).render(
       authorizationParams={{
         redirect_uri: window.location.origin,
       }}
-      screen_hint="signup"
     >
       <App />
     </Auth0Provider>
