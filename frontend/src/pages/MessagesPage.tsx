@@ -1,10 +1,19 @@
 import React, { useEffect, useState } from 'react';
 import TabNavigation from '../components/TabNavigation';
+import { useAuth0 } from '@auth0/auth0-react';
+import api from '../api';
 
 type SavedUser = { id: string; name: string };
-type Message = { fromMe: boolean; text: string };
+type Message = {
+  from_user_id: string;
+  to_user_id: string;
+  text: string;
+  created_at: string;
+};
 
 const MessagesPage = () => {
+  const { user } = useAuth0();
+  const myUserId = user?.sub || user?.email;
   const [savedUsers, setSavedUsers] = useState<SavedUser[]>([]);
   const [selectedUserId, setSelectedUserId] = useState<string | null>(null);
   const [messages, setMessages] = useState<Message[]>([]);
@@ -16,26 +25,28 @@ const MessagesPage = () => {
     setSavedUsers(saved);
   }, []);
 
-  // Load messages for selected user
+  // Load messages for selected user from backend
   useEffect(() => {
-    if (selectedUserId) {
-      const msgs = JSON.parse(
-        localStorage.getItem(`messages_${selectedUserId}`) || '[]'
-      );
-      setMessages(msgs);
+    if (selectedUserId && myUserId) {
+      api.get(`/messages/${myUserId}/${selectedUserId}`).then((res) => {
+        setMessages(res.data);
+      });
     }
-  }, [selectedUserId]);
+  }, [selectedUserId, myUserId]);
 
-  // Send a message
-  const sendMessage = () => {
-    if (!input.trim() || !selectedUserId) return;
-    const newMessages = [...messages, { fromMe: true, text: input }];
-    setMessages(newMessages);
-    localStorage.setItem(
-      `messages_${selectedUserId}`,
-      JSON.stringify(newMessages)
-    );
+  // Send a message to backend
+  const sendMessage = async () => {
+    if (!input.trim() || !selectedUserId || !myUserId) return;
+    await api.post('/messages', {
+      from_user_id: myUserId,
+      to_user_id: selectedUserId,
+      text: input,
+    });
     setInput('');
+    // Re-fetch messages
+    api.get(`/messages/${myUserId}/${selectedUserId}`).then((res) => {
+      setMessages(res.data);
+    });
   };
 
   const selectedUser = savedUsers.find((u) => u.id === selectedUserId);
@@ -87,12 +98,14 @@ const MessagesPage = () => {
                       <div
                         key={idx}
                         className={`flex ${
-                          msg.fromMe ? 'justify-end' : 'justify-start'
+                          msg.from_user_id === myUserId
+                            ? 'justify-end'
+                            : 'justify-start'
                         }`}
                       >
                         <div
                           className={`px-4 py-2 rounded-2xl max-w-xs break-words ${
-                            msg.fromMe
+                            msg.from_user_id === myUserId
                               ? 'bg-blue-600 text-white rounded-br-none'
                               : 'bg-gray-800 text-gray-200 rounded-bl-none'
                           }`}

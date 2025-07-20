@@ -10,6 +10,7 @@ from routes.db.matches_routes import matches_bp
 from routes.db.saved_routes import saved_bp
 from routes.db.itinerary_routes import itins_bp
 from routes.db.event_routes import events_bp
+from routes.db.message_routes import messages_bp
 import certifi
 
 # Load environment variables from .env
@@ -39,6 +40,7 @@ app.register_blueprint(matches_bp, url_prefix="/api")
 app.register_blueprint(saved_bp, url_prefix="/api")
 app.register_blueprint(itins_bp, url_prefix="/api")
 app.register_blueprint(events_bp, url_prefix="/api")
+app.register_blueprint(messages_bp, url_prefix="/api")
 
 if __name__ == "__main__":
     app.run(debug=True, host='0.0.0.0', port=8000)
