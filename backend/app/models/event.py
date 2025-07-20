@@ -1,7 +1,7 @@
 from datetime import datetime
 
 class Event:
-    def __init__(self, name, location, time, desc="", users=None):
+    def __init__(self, name, location, time, price=None, desc="", users=None):
         self.name = name
         self.location = location
         self.time = time  # expected as string: "YYYY-MM-DDTHH:MM"

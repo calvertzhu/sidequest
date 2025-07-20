@@ -2,6 +2,7 @@ import { Divide } from "lucide-react";
 import React, { useEffect, useState } from "react";
 import BG from "../images/landscape.png";
 import api from "../api";
+import { useAuth0 } from "@auth0/auth0-react";
 
 var currentDate = new Date();
 currentDate.setDate(currentDate.getDate() - 1);
@@ -15,6 +16,9 @@ const HeroSection = () => {
     locations: "",
     activities: "",
   });
+  const { loginWithRedirect } = useAuth0();
+
+  const [loading, setLoading] = useState(false);
 
   const handleFormChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
@@ -25,7 +29,21 @@ const HeroSection = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    // await api.post("/api/trips", {});
+    setLoading(true);
+    localStorage.setItem(
+      "activitiesData",
+      JSON.stringify({
+        user_email: null,
+        location: form.locations,
+        start_date: form.startDate,
+        end_date: form.endDate,
+        categories: form.activities,
+        budget: form.budget,
+        trip_name: form.tripName,
+      })
+    );
+
+    loginWithRedirect();
   };
 
   return (
@@ -54,93 +72,99 @@ const HeroSection = () => {
                   onSubmit={handleSubmit}
                   className="grid grid-cols-1 gap-4"
                 >
-                  <div>
-                    <label className="block text-blue-300 font-semibold mb-1">
-                      Trip Name
-                    </label>
-                    <input
-                      className="w-full bg-gray-800 border border-gray-700 rounded px-3 py-2 text-white"
-                      name="tripName"
-                      placeholder="e.g. Summer in Spain"
-                      onChange={(e) => handleFormChange(e)}
-                      required
-                    />
-                  </div>
-                  <div className="flex justify-between">
-                    <div>
-                      <label className=" block text-blue-300 font-semibold mb-1">
-                        Budget (USD)
-                      </label>
-                      <input
-                        className=" bg-gray-800 border border-gray-700 rounded px-3 py-2 text-white"
-                        name="budget"
-                        type="number"
-                        placeholder="e.g. 1500"
-                        onChange={(e) => handleFormChange(e)}
-                        required
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-blue-300 font-semibold mb-1">
-                        Location(s)
-                      </label>
-                      <input
-                        className="w-full bg-gray-800 border border-gray-700 rounded px-3 py-2 text-white"
-                        name="locations"
-                        placeholder="e.g. Barcelona, Madrid"
-                        onChange={(e) => handleFormChange(e)}
-                        required
-                      />
-                    </div>
-                  </div>
-                  <div className="flex gap-4">
-                    <div className="flex-1">
-                      <label className="block text-blue-300 font-semibold mb-1">
-                        Start Date
-                      </label>
-                      <input
-                        type="date"
-                        className="w-full bg-gray-800 border border-gray-700 rounded px-3 py-2 text-white"
-                        name="startDate"
-                        value={form.startDate}
-                        onChange={(e) => handleFormChange(e)}
-                        min={currentDate.toISOString().split("T")[0]}
-                        required
-                      />
-                    </div>
-                    <div className="flex-1">
-                      <label className="block text-blue-300 font-semibold mb-1">
-                        End Date
-                      </label>
-                      <input
-                        type="date"
-                        className="w-full bg-gray-800 border border-gray-700 rounded px-3 py-2 text-white"
-                        name="endDate"
-                        value={form.EndDate}
-                        onChange={(e) => handleFormChange(e)}
-                        min={form.startDate}
-                        required
-                      />
-                    </div>
-                  </div>
-                  <div>
-                    <label className="block text-blue-300 font-semibold mb-1">
-                      Activities/Preferences (optional)
-                    </label>
-                    <textarea
-                      className="w-full bg-gray-800 border border-gray-700 rounded px-3 py-2 text-white"
-                      name="activities"
-                      placeholder="e.g. beach, art museums, local food"
-                      onChange={(e) => handleFormChange(e)}
-                      rows={2}
-                    />
-                  </div>
-                  <button
-                    type="submit"
-                    className="mt-2 bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-6 rounded-full shadow-lg transition-all"
-                  >
-                    Add Trip
-                  </button>
+                  {loading ? (
+                    <div>Loading...</div>
+                  ) : (
+                    <>
+                      <div>
+                        <label className="block text-blue-300 font-semibold mb-1">
+                          Trip Name
+                        </label>
+                        <input
+                          className="w-full bg-gray-800 border border-gray-700 rounded px-3 py-2 text-white"
+                          name="tripName"
+                          placeholder="e.g. Summer in Spain"
+                          onChange={(e) => handleFormChange(e)}
+                          required
+                        />
+                      </div>
+                      <div className="flex justify-between">
+                        <div>
+                          <label className=" block text-blue-300 font-semibold mb-1">
+                            Budget (USD)
+                          </label>
+                          <input
+                            className=" bg-gray-800 border border-gray-700 rounded px-3 py-2 text-white"
+                            name="budget"
+                            type="number"
+                            placeholder="e.g. 1500"
+                            onChange={(e) => handleFormChange(e)}
+                            required
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-blue-300 font-semibold mb-1">
+                            Location(s)
+                          </label>
+                          <input
+                            className="w-full bg-gray-800 border border-gray-700 rounded px-3 py-2 text-white"
+                            name="locations"
+                            placeholder="e.g. Barcelona, Madrid"
+                            onChange={(e) => handleFormChange(e)}
+                            required
+                          />
+                        </div>
+                      </div>
+                      <div className="flex gap-4">
+                        <div className="flex-1">
+                          <label className="block text-blue-300 font-semibold mb-1">
+                            Start Date
+                          </label>
+                          <input
+                            type="date"
+                            className="w-full bg-gray-800 border border-gray-700 rounded px-3 py-2 text-white"
+                            name="startDate"
+                            value={form.startDate}
+                            onChange={(e) => handleFormChange(e)}
+                            min={currentDate.toISOString().split("T")[0]}
+                            required
+                          />
+                        </div>
+                        <div className="flex-1">
+                          <label className="block text-blue-300 font-semibold mb-1">
+                            End Date
+                          </label>
+                          <input
+                            type="date"
+                            className="w-full bg-gray-800 border border-gray-700 rounded px-3 py-2 text-white"
+                            name="endDate"
+                            value={form.EndDate}
+                            onChange={(e) => handleFormChange(e)}
+                            min={form.startDate}
+                            required
+                          />
+                        </div>
+                      </div>
+                      <div>
+                        <label className="block text-blue-300 font-semibold mb-1">
+                          Activities/Preferences (optional)
+                        </label>
+                        <textarea
+                          className="w-full bg-gray-800 border border-gray-700 rounded px-3 py-2 text-white"
+                          name="activities"
+                          placeholder="e.g. beach, art museums, local food"
+                          onChange={(e) => handleFormChange(e)}
+                          rows={2}
+                        />
+                      </div>
+                      <button
+                        type="submit"
+                        className="mt-2 bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-6 rounded-full shadow-lg transition-all"
+                      >
+                        Add Trip
+                      </button>
+                    </>
+                  )}
                 </form>
               </div>
             </div>
@@ -152,3 +176,6 @@ const HeroSection = () => {
 };
 
 export default HeroSection;
+function loginwithRedirect() {
+  throw new Error("Function not implemented.");
+}

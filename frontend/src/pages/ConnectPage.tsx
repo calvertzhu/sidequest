@@ -1,8 +1,26 @@
-import React, { useState } from 'react';
-import TabNavigation from '../components/TabNavigation';
+"use client";
 
-// Mock matches data
-const mockMatches = [
+import { useState } from "react";
+import { Button } from "../components/ui/button";
+import { Card, CardContent } from "../components/ui/card";
+import { Badge } from "../components/ui/badge";
+import { Heart, X, MapPin, Briefcase, GraduationCap } from "lucide-react";
+import TabNavigation from "../components/TabNavigation";
+
+interface Profile {
+  id: number;
+  name: string;
+  age: number;
+  location: string;
+  occupation: string;
+  education: string;
+  bio: string;
+  images: string[];
+  interests: string[];
+  distance: number;
+}
+
+const sampleProfiles: Profile[] = [
   {
     id: '1',
     name: 'Sarah Chen',
@@ -74,53 +92,42 @@ const ConnectPage = () => {
   const handleConnect = () => handleSwipe('right');
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-gray-900 to-gray-800 text-white flex flex-col">
-      <TabNavigation activeTab="connect" />
-      <main className="flex-1 flex flex-col items-center py-10 px-4">
-        <div className="w-full max-w-4xl space-y-8">
-          <div className="text-center space-y-4 pt-4">
-            <div className="flex justify-center">
-              <span className="text-4xl">🧑‍🤝‍🧑</span>
+    <div className="from-gray-900 to-gray-800 min-h-screen text-white flex flex-col bg-cover bg-center">
+      <TabNavigation activeTab="dashboard" />
+      <div className="min-h-screen bg-gradient-to-br from-pink-50 to-red-50 p-4">
+        <div className="max-w-sm mx-auto">
+          {/* Header */}
+          <div className="flex items-center justify-center mb-6 pt-4">
+            <div className="flex items-center gap-2">
+              <div className="w-8 h-8 bg-gradient-to-r from-pink-500 to-red-500 rounded-full flex items-center justify-center">
+                <Heart className="w-5 h-5 text-white fill-current" />
+              </div>
+              <h1 className="text-2xl font-bold bg-gradient-to-r from-pink-500 to-red-500 bg-clip-text text-transparent">
+                Spark
+              </h1>
             </div>
-            <h1 className="text-3xl font-bold text-white">
-              Your Travel Matches
-            </h1>
-            <p className="text-gray-400">
-              Connect with fellow travelers who share your itinerary
-            </p>
           </div>
 
-          {/* Trip Selector or Prompt */}
-          {trips.length === 0 ? (
-            <div className="flex flex-col items-center space-y-4 py-12">
-              <div className="text-lg text-gray-300">
-                You have no trips yet.
-              </div>
-              <a
-                href="/trips"
-                className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-6 rounded-full shadow-lg transition-all"
-              >
-                Create a Trip
-              </a>
-            </div>
-          ) : (
-            <div className="flex flex-col md:flex-row items-center gap-4 mb-8">
-              <label className="text-blue-300 font-semibold">
-                Select Trip:
-              </label>
-              <select
-                className="bg-gray-800 border border-gray-700 rounded px-3 py-2 text-white"
-                value={selectedTripId ?? ''}
-                onChange={(e) => setSelectedTripId(Number(e.target.value))}
-              >
-                {trips.map((trip) => (
-                  <option key={trip.id} value={trip.id}>
-                    {trip.name}
-                  </option>
-                ))}
-              </select>
-            </div>
-          )}
+          {/* Profile Card */}
+          <div className="relative mb-6">
+            <Card
+              className={`overflow-hidden shadow-2xl transition-all duration-300 ${
+                isAnimating
+                  ? animationDirection === "right"
+                    ? "transform translate-x-full rotate-12 opacity-0"
+                    : "transform -translate-x-full -rotate-12 opacity-0"
+                  : "transform translate-x-0 rotate-0 opacity-100"
+              }`}
+            >
+              <CardContent className="p-0">
+                {/* Profile Image */}
+                <div className="relative">
+                  <img
+                    src={currentProfile.images[0] || "/placeholder.svg"}
+                    alt={currentProfile.name}
+                    className="w-full h-96 object-cover"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
 
           {/* Card with Cross and Heart Buttons and Animation */}
           {trips.length > 0 && currentIndex < mockMatches.length && (
@@ -216,6 +223,4 @@ const ConnectPage = () => {
       </main>
     </div>
   );
-};
-
-export default ConnectPage;
+}

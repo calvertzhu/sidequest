@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 import { useAuth0 } from '@auth0/auth0-react';
 import React from 'react';
 import { Link } from 'react-router-dom';
@@ -8,6 +9,18 @@ const tabs = [
   { key: 'trips', label: 'Trips' },
   { key: 'connect', label: 'Connect' },
   { key: 'messages', label: 'Messages' },
+=======
+import { useAuth0 } from "@auth0/auth0-react";
+import React, { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
+
+const initialTabs = [
+  { key: "dashboard", label: "Dashboard" },
+  { key: "profile", label: "Profile" },
+  { key: "trips", label: "Trips" },
+  { key: "connect", label: "Connect" },
+  { key: "messages", label: "Messages" },
+>>>>>>> 5fd33141ee3fb75a8acadbf8f736799cc2a11055
 ];
 
 interface TabNavigationProps {
@@ -15,7 +28,16 @@ interface TabNavigationProps {
 }
 
 const TabNavigation: React.FC<TabNavigationProps> = ({ activeTab }) => {
+  const [tabs, setTabs] = useState(initialTabs);
   const { loginWithRedirect, isAuthenticated, logout } = useAuth0();
+
+  useEffect(() => {
+    if (!isAuthenticated) {
+      setTabs([{ key: "dashboard", label: "Dashboard" }]);
+    } else {
+      setTabs(initialTabs);
+    }
+  }, [isAuthenticated]);
 
   return (
     <div className="flex items-center bg-gray-950 border-b border-gray-800 shadow-lg sticky top-0 z-20">
