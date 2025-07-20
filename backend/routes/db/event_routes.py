@@ -5,16 +5,13 @@ from app.models.event import Event
 
 events_bp = Blueprint("events", __name__)
 
-@events_bp.route("/events", methods=["POST"])
-def create_event():
-    db = current_app.config["DB"]
-    data = request.json
+def insertEvent(db, data):
     try:
         event_obj = Event(
             name=data["name"],
             location=data["location"],
-            time=datetime.strptime(data["time"], "%Y-%m-%dT%H:%M"),
-            price=data["price"],
+            time=data["time"], #datetime.strptime(data["time"], "%Y-%m-%dT%H:%M"),
+            # price=data["price"],
             # link=data["link"],
             desc=data.get("desc", ""),
             users=data.get("users", [])
@@ -26,10 +23,13 @@ def create_event():
     except Exception as e:
         return jsonify({"error": str(e)}), 400
 
-@events_bp.route("/events/<event_id>/add-user", methods=["POST"])
-def add_user_to_event(event_id):
+@events_bp.route("/events", methods=["POST"])
+def create_event():
     db = current_app.config["DB"]
-    data = request.get_json()
+    data = request.json
+    return insertEvent(db, data)
+
+def updateEventWithUser(db, data):
     user_id = data.get("user_id")
 
     if not user_id:
@@ -55,6 +55,12 @@ def add_user_to_event(event_id):
 
     except Exception as e:
         return jsonify({"error": str(e)}), 400
+
+@events_bp.route("/events/<event_id>/add-user", methods=["POST"])
+def add_user_to_event(event_id):
+    db = current_app.config["DB"]
+    data = request.get_json()
+    return updateEventWithUser(db, data)
 
 
 @events_bp.route("/events", methods=["GET"])
@@ -87,13 +93,7 @@ def get_events():
 
     return jsonify(events), 200
 
-@events_bp.route("/events/search", methods=["GET"])
-def search_event_by_details():
-    db = current_app.config["DB"]
-    name = request.args.get("name")
-    location = request.args.get("location")
-    time_str = request.args.get("time")  # expects ISO format: "YYYY-MM-DDTHH:MM"
-
+def getEventByDetails(db, name, location, time_str):
     if not name or not location or not time_str:
         return jsonify({"error": "Missing required query parameters: name, location, time"}), 400
 
@@ -114,5 +114,14 @@ def search_event_by_details():
 
     except Exception as e:
         return jsonify({"error": str(e)}), 400
+
+@events_bp.route("/events/search", methods=["GET"])
+def search_event_by_details():
+    db = current_app.config["DB"]
+    name = request.args.get("name")
+    location = request.args.get("location")
+    time_str = request.args.get("time")  # expects ISO format: "YYYY-MM-DDTHH:MM"
+
+    return getEventByDetails(db, name, location, time_str)
 
 

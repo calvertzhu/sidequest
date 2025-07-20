@@ -244,6 +244,8 @@ def get_match_summary(match_analysis: MatchAnalysis, user_id: str = None) -> Dic
     """Extract only user_id and match score from the match analysis."""
     overall_score = match_analysis.overall_match_score
     
+    
+
     return {
         "user_id": user_id,
         "match_score": overall_score

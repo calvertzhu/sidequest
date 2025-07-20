@@ -102,12 +102,7 @@ def get_user_by_id(user_id):
     except Exception as e:
         return jsonify({"error": str(e)}), 400
 
-
-@users_bp.route("/users/search", methods=["GET"])
-def get_user_by_email():
-    db = current_app.config["DB"]
-    email = request.args.get("email")
-
+def getUserByEmail(db, email):
     if not email:
         return jsonify({"error": "Missing required query parameter: email"}), 400
 
@@ -127,3 +122,11 @@ def get_user_by_email():
 
     except Exception as e:
         return jsonify({"error": str(e)}), 400
+
+@users_bp.route("/users/search", methods=["GET"])
+def get_user_by_email():
+    db = current_app.config["DB"]
+    email = request.args.get("email")
+
+    return getUserByEmail(db, email)
+    

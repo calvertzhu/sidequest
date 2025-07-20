@@ -5,7 +5,7 @@ class Event:
         self.name = name
         self.location = location
         self.time = time  # expected as string: "YYYY-MM-DDTHH:MM"
-        self.price = price
+        # self.price = price
         # self.link = link
         self.desc = desc
         self.users = users or []
@@ -15,7 +15,7 @@ class Event:
             "name": self.name,
             "location": self.location,
             "time": datetime.strptime(self.time, "%Y-%m-%dT%H:%M"),
-            "price": self.price,
+            # "price": self.price,
             # "link": self.link,
             "desc": self.desc,
             "users": self.users

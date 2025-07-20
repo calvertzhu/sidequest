@@ -3,6 +3,10 @@ import json
 import google.generativeai as genai
 from dotenv import load_dotenv
 
+from routes.db.event_routes import insertEvent, updateEventWithUser, getEventByDetails
+from routes.db.itinerary_routes import insertItinerary
+from routes.db.user_routes import getUserByEmail
+
 load_dotenv()
 
 # Configure Gemini model
@@ -22,7 +26,7 @@ def build_gemini_prompt(location, interests, activities_response, user_info=None
         start_date: Trip start date
         end_date: Trip end date
     """
-    
+
     # Extract activities from the response
     activities = activities_response.get('activities', [])
     
@@ -40,7 +44,7 @@ Traveler Profile:
 - Name: {user_info.get('name', 'Unknown')}
 - Age: {user_info.get('age', 'Not specified')}
 - Gender: {user_info.get('gender', 'Not specified')}
-- Dietary Restrictions: {user_info.get('dietary_restrictions', 'None')}
+- Dietary Restrictions: {user_info.get('dietary_restrictions', [])}
 - Home Location: {user_info.get('location', 'Not specified')}
 - Travel Style: Based on interests in {', '.join(interests)}
 
@@ -84,31 +88,22 @@ Return the itinerary in **JSON format**. Each activity must include:
 
 The format must be:
 
-{{
-  "day_1": {{
-    "morning": [
-      {{
-        "name": "activity name",
-        "description": "short description",
-        "location": "address or venue",
-        "start_time": "HH:MM",
-        "end_time": "HH:MM"
-      }},
-      ...
-    ],
-    "afternoon": [ ... ],
-    "evening": [ ... ]
-  }},
-  "day_2": {{
-    ...
-  }}
-}}
+[
+  {
+    "name": "activity name",
+    "description": "short description",
+    "location": "address or venue",
+    "start_time": "HH:MM",
+    "end_time": "HH:MM"
+  },
+  ...
+]
 
 Only return valid JSON. No commentary or markdown.
 """
 
 
-def generate_itinerary_json(location, interests, activities_response, user_info=None, budget="medium", start_date=None, end_date=None):
+def generate_itinerary_json(location, interests, activities_response, user_info=None, budget="medium", start_date=None, end_date=None, user_email=None, db=None):
     """
     Generate itinerary using Gemini with complete activity routes response.
     
@@ -140,6 +135,33 @@ def generate_itinerary_json(location, interests, activities_response, user_info=
         
         # Parse the JSON
         itinerary_json = json.loads(response_text)
+        
+        userId_res, status = getUserByEmail(db, user_email)
+        user_info = user_info_res.get_json()
+        userId = user_info["user"].get("_id")
+
+        for event in itinerary_json:
+            name = event["name"]
+            location = event["location"]
+            time_str = event['start_time']
+            
+            exists = getEventByDetails(db, name, location, time_str)
+
+            if getEventByDetails.json().get("exists"):
+                event_id = exists["event"]["_id"]
+                data = {
+                    "user_id": userId
+                }
+                updateEventWithUser(db, data)
+            else:
+                data = {
+                    "name": name,
+                    "desc": event.get("description", ""),
+                    "location": location,
+                    "time": time_str,
+                    "users": [userId]
+                }
+                insertEvent(db, data)
         return itinerary_json
     except Exception as e:
         raise RuntimeError(f"Gemini failed: {str(e)}")
