@@ -1,76 +1,77 @@
-import React, { useState } from 'react';
-import TabNavigation from '../components/TabNavigation';
+import React, { useState } from "react";
+import TabNavigation from "../components/TabNavigation";
+import { useAuth0 } from "@auth0/auth0-react";
 
 const initialProfile = {
-  name: 'Jane Doe',
-  location: 'Toronto, Canada',
-  gender: 'Female',
-  birthday: '1998-05-15',
-  profilePic: '',
-  travelStyle: ['Cultural', 'Social'],
-  activities: ['Outdoor Activities', 'Arts & Culture', 'Nightlife'],
-  dietary: ['Vegetarian'],
-  social: ['Open to Group Activities', 'Looking to Meet New People'],
-  accommodation: ['Hotels', 'Hostels'],
-  languages: ['English', 'French'],
+  name: "Jane Doe",
+  location: "Toronto, Canada",
+  gender: "Female",
+  birthday: "1998-05-15",
+  profilePic: "",
+  travelStyle: ["Cultural", "Social"],
+  activities: ["Outdoor Activities", "Arts & Culture", "Nightlife"],
+  dietary: ["Vegetarian"],
+  social: ["Open to Group Activities", "Looking to Meet New People"],
+  accommodation: ["Hotels", "Hostels"],
+  languages: ["English", "French"],
   accessibility: [],
 };
 
 const travelStyles = [
-  'Adventurous',
-  'Relaxed',
-  'Cultural',
-  'Social',
-  'Nature-Lover',
-  'Foodie',
-  'Luxury',
-  'Budget',
+  "Adventurous",
+  "Relaxed",
+  "Cultural",
+  "Social",
+  "Nature-Lover",
+  "Foodie",
+  "Luxury",
+  "Budget",
 ];
 const activities = [
-  'Outdoor Activities',
-  'Arts & Culture',
-  'Nightlife',
-  'Shopping',
-  'Wellness',
-  'Sports',
-  'Volunteering',
+  "Outdoor Activities",
+  "Arts & Culture",
+  "Nightlife",
+  "Shopping",
+  "Wellness",
+  "Sports",
+  "Volunteering",
 ];
 const dietaryOptions = [
-  'Vegetarian',
-  'Vegan',
-  'Halal',
-  'Kosher',
-  'Gluten-Free',
-  'Dairy-Free',
-  'No Restrictions',
+  "Vegetarian",
+  "Vegan",
+  "Halal",
+  "Kosher",
+  "Gluten-Free",
+  "Dairy-Free",
+  "No Restrictions",
 ];
 const socialOptions = [
-  'Solo Traveler',
-  'Open to Group Activities',
-  'Looking to Meet New People',
-  'Prefer Quiet/Private Experiences',
+  "Solo Traveler",
+  "Open to Group Activities",
+  "Looking to Meet New People",
+  "Prefer Quiet/Private Experiences",
 ];
 const accommodationOptions = [
-  'Hotels',
-  'Hostels',
-  'Airbnbs',
-  'Camping',
-  'No Preference',
+  "Hotels",
+  "Hostels",
+  "Airbnbs",
+  "Camping",
+  "No Preference",
 ];
 const languageOptions = [
-  'English',
-  'French',
-  'Spanish',
-  'Mandarin',
-  'Hindi',
-  'Arabic',
-  'Other',
+  "English",
+  "French",
+  "Spanish",
+  "Mandarin",
+  "Hindi",
+  "Arabic",
+  "Other",
 ];
 const accessibilityOptions = [
-  'Wheelchair Accessible',
-  'Service Animal Friendly',
-  'Dietary Needs',
-  'Other',
+  "Wheelchair Accessible",
+  "Service Animal Friendly",
+  "Dietary Needs",
+  "Other",
 ];
 
 function MultiSelect({
@@ -95,8 +96,8 @@ function MultiSelect({
             className={`px-3 py-1 rounded-full border text-sm transition
               ${
                 selected.includes(opt)
-                  ? 'bg-blue-600 border-blue-400 text-white'
-                  : 'bg-gray-800 border-gray-700 text-gray-300 hover:bg-blue-900 hover:text-blue-300'
+                  ? "bg-blue-600 border-blue-400 text-white"
+                  : "bg-gray-800 border-gray-700 text-gray-300 hover:bg-blue-900 hover:text-blue-300"
               }`}
             onClick={() =>
               selected.includes(opt)
@@ -114,6 +115,7 @@ function MultiSelect({
 
 const ProfilePage = () => {
   const [profile, setProfile] = useState(initialProfile);
+  const { user, isLoading } = useAuth0();
 
   const handleChange = (
     field: keyof typeof initialProfile,
@@ -121,6 +123,10 @@ const ProfilePage = () => {
   ) => {
     setProfile((prev) => ({ ...prev, [field]: value }));
   };
+
+  if (isLoading) {
+    return <div>Loading...</div>;
+  }
 
   return (
     <div className="bg-gradient-to-b from-gray-900 to-gray-800 min-h-screen text-white flex flex-col">
@@ -130,9 +136,9 @@ const ProfilePage = () => {
           <div className="flex flex-col md:flex-row items-center gap-8 mb-8">
             <div className="flex flex-col items-center">
               <div className="w-32 h-32 rounded-full bg-gray-700 flex items-center justify-center text-5xl mb-2 overflow-hidden">
-                {profile.profilePic ? (
+                {user != undefined ? (
                   <img
-                    src={profile.profilePic}
+                    src={user.picture}
                     alt="Profile"
                     className="object-cover w-full h-full"
                   />
@@ -152,8 +158,8 @@ const ProfilePage = () => {
                     const reader = new FileReader();
                     reader.onload = (ev) => {
                       const result = ev.target?.result;
-                      if (typeof result === 'string') {
-                        handleChange('profilePic', result);
+                      if (typeof result === "string") {
+                        handleChange("profilePic", result);
                       }
                     };
                     reader.readAsDataURL(file);
@@ -169,7 +175,7 @@ const ProfilePage = () => {
                 <input
                   className="w-full bg-gray-800 border border-gray-700 rounded px-3 py-2 text-white"
                   value={profile.name}
-                  onChange={(e) => handleChange('name', e.target.value)}
+                  onChange={(e) => handleChange("name", e.target.value)}
                 />
               </div>
               <div>
@@ -179,7 +185,7 @@ const ProfilePage = () => {
                 <input
                   className="w-full bg-gray-800 border border-gray-700 rounded px-3 py-2 text-white"
                   value={profile.location}
-                  onChange={(e) => handleChange('location', e.target.value)}
+                  onChange={(e) => handleChange("location", e.target.value)}
                 />
               </div>
               <div>
@@ -189,7 +195,7 @@ const ProfilePage = () => {
                 <input
                   className="w-full bg-gray-800 border border-gray-700 rounded px-3 py-2 text-white"
                   value={profile.gender}
-                  onChange={(e) => handleChange('gender', e.target.value)}
+                  onChange={(e) => handleChange("gender", e.target.value)}
                 />
               </div>
               <div>
@@ -200,7 +206,7 @@ const ProfilePage = () => {
                   type="date"
                   className="w-full bg-gray-800 border border-gray-700 rounded px-3 py-2 text-white"
                   value={profile.birthday}
-                  onChange={(e) => handleChange('birthday', e.target.value)}
+                  onChange={(e) => handleChange("birthday", e.target.value)}
                 />
               </div>
             </div>
@@ -213,43 +219,43 @@ const ProfilePage = () => {
               label="Travel Style"
               options={travelStyles}
               selected={profile.travelStyle}
-              onChange={(v) => handleChange('travelStyle', v)}
+              onChange={(v) => handleChange("travelStyle", v)}
             />
             <MultiSelect
               label="Activity Preferences"
               options={activities}
               selected={profile.activities}
-              onChange={(v) => handleChange('activities', v)}
+              onChange={(v) => handleChange("activities", v)}
             />
             <MultiSelect
               label="Dietary Restrictions"
               options={dietaryOptions}
               selected={profile.dietary}
-              onChange={(v) => handleChange('dietary', v)}
+              onChange={(v) => handleChange("dietary", v)}
             />
             <MultiSelect
               label="Social Preferences"
               options={socialOptions}
               selected={profile.social}
-              onChange={(v) => handleChange('social', v)}
+              onChange={(v) => handleChange("social", v)}
             />
             <MultiSelect
               label="Accommodation Preferences"
               options={accommodationOptions}
               selected={profile.accommodation}
-              onChange={(v) => handleChange('accommodation', v)}
+              onChange={(v) => handleChange("accommodation", v)}
             />
             <MultiSelect
               label="Languages Spoken"
               options={languageOptions}
               selected={profile.languages}
-              onChange={(v) => handleChange('languages', v)}
+              onChange={(v) => handleChange("languages", v)}
             />
             <MultiSelect
               label="Accessibility Needs"
               options={accessibilityOptions}
               selected={profile.accessibility}
-              onChange={(v) => handleChange('accessibility', v)}
+              onChange={(v) => handleChange("accessibility", v)}
             />
           </div>
         </div>
