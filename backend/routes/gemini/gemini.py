@@ -183,7 +183,7 @@ def generate_itinerary_json(location, interests, activities_response, user_info=
                 if user == user_id:
                     continue
                 user = getUserById(db, user)
-                save_langchain_match_to_db(db, user_info, user["_id"])
+                save_langchain_match_to_db(db, user_info, user, event["_id"])
             
 
         return itinerary_json
