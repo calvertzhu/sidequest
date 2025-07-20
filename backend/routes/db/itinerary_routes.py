@@ -44,6 +44,8 @@ def get_itinerary_events(itinerary_id):
             return jsonify({"error": "Itinerary not found"}), 404
 
         events = list(db.events.find({"_id": {"$in": itinerary["event_ids"]}}))
+        events.sort(key=lambda e: e.get("time", None))
+        
         for event in events:
             event["_id"] = str(event["_id"])
             event["time"] = event["time"].strftime("%Y-%m-%dT%H:%M")

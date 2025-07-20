@@ -25,7 +25,7 @@ def create_user():
         )
 
         user = user_obj.to_dict()
-        user["birthday"] = datetime.strptime(user["birthday"], "%Y-%m-%d")  # convert before DB insert
+        user["birthday"] = datetime.strptime(user["birthday"], "%Y-%m-%d") if user["birthday"] else "" # convert before DB insert
         result = db.users.insert_one(user)
         return jsonify({"_id": str(result.inserted_id)}), 201
 
@@ -57,6 +57,29 @@ def get_user_by_id(user_id):
             user["birthday"] = user["birthday"].strftime("%Y-%m-%d")
 
         return jsonify(user), 200
+
+    except Exception as e:
+        return jsonify({"error": str(e)}), 400
+
+
+@users_bp.route("/users/search", methods=["GET"])
+def get_user_by_email():
+    db = current_app.config["DB"]
+    email = request.args.get("email")
+
+    if not email:
+        return jsonify({"error": "Missing required query parameter: email"}), 400
+
+    try:
+        user = db.users.find_one({"email": email})
+        if not user:
+            return jsonify({"exists": False}), 200
+
+        user["_id"] = str(user["_id"])
+        if "birthday" in user and isinstance(user["birthday"], datetime):
+            user["birthday"] = user["birthday"].strftime("%Y-%m-%d")
+
+        return jsonify({"exists": True, "user": user}), 200
 
     except Exception as e:
         return jsonify({"error": str(e)}), 400
