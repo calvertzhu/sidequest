@@ -143,3 +143,6 @@ def generate_itinerary_json(location, interests, activities_response, user_info=
         return itinerary_json
     except Exception as e:
         raise RuntimeError(f"Gemini failed: {str(e)}")
+
+
+
