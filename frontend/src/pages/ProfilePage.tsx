@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from 'react';
-import TabNavigation from '../components/TabNavigation';
-import { useAuth0 } from '@auth0/auth0-react';
-import api from '../api';
+import React, { useState, useEffect } from "react";
+import TabNavigation from "../components/TabNavigation";
+import { useAuth0 } from "@auth0/auth0-react";
+import api from "../api";
 
 interface ProfileData {
   name: string;
@@ -16,41 +16,41 @@ interface ProfileData {
 }
 
 const travelStyles = [
-  'Adventurous',
-  'Relaxed',
-  'Cultural',
-  'Social',
-  'Nature-Lover',
-  'Foodie',
-  'Luxury',
-  'Budget',
+  "Adventurous",
+  "Relaxed",
+  "Cultural",
+  "Social",
+  "Nature-Lover",
+  "Foodie",
+  "Luxury",
+  "Budget",
 ];
 
 const activities = [
-  'Outdoor Activities',
-  'Arts & Culture',
-  'Nightlife',
-  'Shopping',
-  'Wellness',
-  'Sports',
-  'Volunteering',
+  "Outdoor Activities",
+  "Arts & Culture",
+  "Nightlife",
+  "Shopping",
+  "Wellness",
+  "Sports",
+  "Volunteering",
 ];
 
 const dietaryOptions = [
-  'Vegetarian',
-  'Vegan',
-  'Halal',
-  'Kosher',
-  'Gluten-Free',
-  'Dairy-Free',
-  'No Restrictions',
+  "Vegetarian",
+  "Vegan",
+  "Halal",
+  "Kosher",
+  "Gluten-Free",
+  "Dairy-Free",
+  "No Restrictions",
 ];
 
 const socialOptions = [
-  'Solo Traveler',
-  'Open to Group Activities',
-  'Looking to Meet New People',
-  'Prefer Quiet/Private Experiences',
+  "Solo Traveler",
+  "Open to Group Activities",
+  "Looking to Meet New People",
+  "Prefer Quiet/Private Experiences",
 ];
 
 function MultiSelect({
@@ -75,8 +75,8 @@ function MultiSelect({
             className={`px-3 py-1 rounded-full border text-sm transition
               ${
                 selected.includes(opt)
-                  ? 'bg-blue-600 border-blue-400 text-white'
-                  : 'bg-gray-800 border-gray-700 text-gray-300 hover:bg-blue-900 hover:text-blue-300'
+                  ? "bg-blue-600 border-blue-400 text-white"
+                  : "bg-gray-800 border-gray-700 text-gray-300 hover:bg-blue-900 hover:text-blue-300"
               }`}
             onClick={() =>
               selected.includes(opt)
@@ -95,11 +95,11 @@ function MultiSelect({
 const ProfilePage = () => {
   const { user } = useAuth0();
   const [profile, setProfile] = useState<ProfileData>({
-    name: '',
-    location: '',
-    gender: '',
-    birthday: '',
-    profilePic: '',
+    name: "",
+    location: "",
+    gender: "",
+    birthday: "",
+    profilePic: "",
     travelStyle: [],
     activities: [],
     dietary: [],
@@ -109,6 +109,8 @@ const ProfilePage = () => {
   const [isLoadingProfile, setIsLoadingProfile] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
+
+  console.log(user);
 
   // Load user profile from database
   useEffect(() => {
@@ -136,11 +138,11 @@ const ProfilePage = () => {
           );
 
           setProfile({
-            name: userData.name || '',
-            location: userData.location || '',
-            gender: userData.gender || '',
-            birthday: userData.birthday || '',
-            profilePic: userData.profile_pic || '',
+            name: userData.name || "",
+            location: userData.location || "",
+            gender: userData.gender || "",
+            birthday: userData.birthday || "",
+            profilePic: userData.profile_pic || "",
             travelStyle,
             activities: userActivities,
             dietary: userData.dietary_restrictions
@@ -150,8 +152,8 @@ const ProfilePage = () => {
           });
         }
       } catch (err) {
-        console.error('Failed to load user profile:', err);
-        setError('Failed to load profile data');
+        console.error("Failed to load user profile:", err);
+        setError("Failed to load profile data");
       } finally {
         setIsLoadingProfile(false);
       }
@@ -180,7 +182,7 @@ const ProfilePage = () => {
       !profile.birthday
     ) {
       setError(
-        'Please fill in all required fields (Name, Location, Gender, Birthday)'
+        "Please fill in all required fields (Name, Location, Gender, Birthday)"
       );
       setLoading(false);
       return;
@@ -201,20 +203,20 @@ const ProfilePage = () => {
         gender: profile.gender,
         interests: allInterests,
         profile_pic: profile.profilePic,
-        dietary_restrictions: profile.dietary[0] || '',
+        dietary_restrictions: profile.dietary[0] || "",
         location: profile.location,
         travel_dates: {
-          from: '',
-          to: '',
+          from: "",
+          to: "",
         },
       };
 
       // Update user in database
       await api.put(`/users/${user?.email}`, userData);
-      setSuccess('Profile updated successfully!');
+      setSuccess("Profile updated successfully!");
     } catch (err) {
-      console.error('Failed to save profile:', err);
-      setError('Failed to save profile. Please try again.');
+      console.error("Failed to save profile:", err);
+      setError("Failed to save profile. Please try again.");
     } finally {
       setLoading(false);
     }
@@ -270,8 +272,8 @@ const ProfilePage = () => {
                     const reader = new FileReader();
                     reader.onload = (ev) => {
                       const result = ev.target?.result;
-                      if (typeof result === 'string') {
-                        handleChange('profilePic', result);
+                      if (typeof result === "string") {
+                        handleChange("profilePic", result);
                       }
                     };
                     reader.readAsDataURL(file);
@@ -287,7 +289,7 @@ const ProfilePage = () => {
                 <input
                   className="w-full bg-gray-800 border border-gray-700 rounded px-3 py-2 text-white"
                   value={profile.name}
-                  onChange={(e) => handleChange('name', e.target.value)}
+                  onChange={(e) => handleChange("name", e.target.value)}
                   required
                 />
                 {!profile.name && (
@@ -301,7 +303,7 @@ const ProfilePage = () => {
                 <input
                   className="w-full bg-gray-800 border border-gray-700 rounded px-3 py-2 text-white"
                   value={profile.location}
-                  onChange={(e) => handleChange('location', e.target.value)}
+                  onChange={(e) => handleChange("location", e.target.value)}
                   required
                 />
                 {!profile.location && (
@@ -317,7 +319,7 @@ const ProfilePage = () => {
                 <select
                   className="w-full bg-gray-800 border border-gray-700 rounded px-3 py-2 text-white"
                   value={profile.gender}
-                  onChange={(e) => handleChange('gender', e.target.value)}
+                  onChange={(e) => handleChange("gender", e.target.value)}
                   required
                 >
                   <option value="">Select gender</option>
@@ -340,7 +342,7 @@ const ProfilePage = () => {
                   type="date"
                   className="w-full bg-gray-800 border border-gray-700 rounded px-3 py-2 text-white"
                   value={profile.birthday}
-                  onChange={(e) => handleChange('birthday', e.target.value)}
+                  onChange={(e) => handleChange("birthday", e.target.value)}
                   required
                 />
                 {!profile.birthday && (
@@ -359,25 +361,25 @@ const ProfilePage = () => {
               label="Travel Style"
               options={travelStyles}
               selected={profile.travelStyle}
-              onChange={(v) => handleChange('travelStyle', v)}
+              onChange={(v) => handleChange("travelStyle", v)}
             />
             <MultiSelect
               label="Activity Preferences"
               options={activities}
               selected={profile.activities}
-              onChange={(v) => handleChange('activities', v)}
+              onChange={(v) => handleChange("activities", v)}
             />
             <MultiSelect
               label="Dietary Restrictions"
               options={dietaryOptions}
               selected={profile.dietary}
-              onChange={(v) => handleChange('dietary', v)}
+              onChange={(v) => handleChange("dietary", v)}
             />
             <MultiSelect
               label="Social Preferences"
               options={socialOptions}
               selected={profile.social}
-              onChange={(v) => handleChange('social', v)}
+              onChange={(v) => handleChange("social", v)}
             />
           </div>
 
@@ -388,11 +390,11 @@ const ProfilePage = () => {
               disabled={loading}
               className={`px-8 py-3 rounded-full font-bold text-lg transition-all ${
                 loading
-                  ? 'bg-gray-600 text-gray-400 cursor-not-allowed'
-                  : 'bg-blue-600 hover:bg-blue-700 text-white shadow-lg'
+                  ? "bg-gray-600 text-gray-400 cursor-not-allowed"
+                  : "bg-blue-600 hover:bg-blue-700 text-white shadow-lg"
               }`}
             >
-              {loading ? 'Saving...' : 'Update Profile'}
+              {loading ? "Saving..." : "Update Profile"}
             </button>
           </div>
         </div>

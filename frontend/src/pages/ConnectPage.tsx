@@ -1,299 +1,253 @@
-import React, { useState } from 'react';
-import TabNavigation from '../components/TabNavigation';
+"use client";
 
-// Mock matches data
-const mockMatches = [
+import { useState } from "react";
+import { Button } from "../components/ui/button";
+import { Card, CardContent } from "../components/ui/card";
+import { Badge } from "../components/ui/badge";
+import { Heart, X, MapPin, Briefcase, GraduationCap } from "lucide-react";
+import TabNavigation from "../components/TabNavigation";
+
+interface Profile {
+  id: number;
+  name: string;
+  age: number;
+  location: string;
+  occupation: string;
+  education: string;
+  bio: string;
+  images: string[];
+  interests: string[];
+  distance: number;
+}
+
+const sampleProfiles: Profile[] = [
   {
-    id: '1',
-    name: 'Sarah Chen',
-    age: 24,
-    location: 'San Francisco, CA',
-    avatar: '👩🏻',
-    bio: 'Recent grad exploring the world! Love food and photography 📸',
-    commonActivities: ['Sushi at Tsukiji Market', 'Tokyo Skytree'],
-    travelStyle: 'Cultural Immersion',
-    rating: 4.9,
-    tripOverlap: '2 days',
-    interests: ['Photography', 'Street Food', 'Museums'],
-  },
-  {
-    id: '2',
-    name: 'Alex Rodriguez',
+    id: 1,
+    name: "Emma",
     age: 26,
-    location: 'Austin, TX',
-    avatar: '🧑🏽',
-    bio: 'Adventure seeker and foodie. Always down for new experiences!',
-    commonActivities: ['Shibuya Crossing', 'Harajuku Fashion'],
-    travelStyle: 'Adventure Seeker',
-    rating: 4.7,
-    tripOverlap: '1 day',
-    interests: ['Adventure', 'Nightlife', 'Local Cuisine'],
+    location: "San Francisco, CA",
+    occupation: "Product Designer",
+    education: "Stanford University",
+    bio: "Love hiking, coffee, and good conversations. Looking for someone who shares my passion for adventure and creativity.",
+    images: ["/placeholder.svg?height=600&width=400"],
+    interests: ["Hiking", "Photography", "Coffee", "Travel", "Design"],
+    distance: 2,
   },
   {
-    id: '3',
-    name: 'Emma Thompson',
-    age: 23,
-    location: 'London, UK',
-    avatar: '👩🏼',
-    bio: 'Solo traveler on a gap year. Love meeting new people and sharing stories!',
-    commonActivities: ['Senso-ji Temple', 'Tokyo Skytree', 'Ramen Lunch'],
-    travelStyle: 'Budget Backpacker',
-    rating: 4.8,
-    tripOverlap: '3 days',
-    interests: ['Backpacking', 'Culture', 'Budget Travel'],
+    id: 2,
+    name: "Alex",
+    age: 29,
+    location: "San Francisco, CA",
+    occupation: "Software Engineer",
+    education: "UC Berkeley",
+    bio: "Tech enthusiast by day, chef by night. Always up for trying new restaurants or cooking something delicious at home.",
+    images: ["/placeholder.svg?height=600&width=400"],
+    interests: ["Cooking", "Tech", "Gaming", "Fitness", "Music"],
+    distance: 5,
+  },
+  {
+    id: 3,
+    name: "Sofia",
+    age: 24,
+    location: "San Francisco, CA",
+    occupation: "Marketing Manager",
+    education: "UCLA",
+    bio: "Yoga instructor and marketing professional. Seeking balance in life and looking for someone who values mindfulness and growth.",
+    images: ["/placeholder.svg?height=600&width=400"],
+    interests: ["Yoga", "Meditation", "Reading", "Art", "Wellness"],
+    distance: 3,
+  },
+  {
+    id: 4,
+    name: "Marcus",
+    age: 31,
+    location: "San Francisco, CA",
+    occupation: "Architect",
+    education: "MIT",
+    bio: "Building dreams into reality. Love exploring the city's architecture and finding hidden gems. Weekend warrior on the basketball court.",
+    images: ["/placeholder.svg?height=600&width=400"],
+    interests: ["Architecture", "Basketball", "Travel", "Photography", "Wine"],
+    distance: 7,
   },
 ];
 
-// For now, mock trips (replace with prop or context in real app)
-const mockTrips = [
-  { id: 1, name: 'Summer in Spain' },
-  { id: 2, name: 'Tokyo Adventure' },
-];
-
-const ConnectPage = () => {
-  // Replace mockTrips with prop or context in real app
-  const trips = mockTrips;
-  const [selectedTripId, setSelectedTripId] = useState(
-    trips.length > 0 ? trips[0].id : null
-  );
-  const [connectedUsers, setConnectedUsers] = useState<string[]>([]);
-  const [savedUsers, setSavedUsers] = useState<string[]>([]);
-  const [messageModalUser, setMessageModalUser] = useState<
-    null | (typeof mockMatches)[0]
+export default function Component() {
+  const [currentProfileIndex, setCurrentProfileIndex] = useState(0);
+  const [isAnimating, setIsAnimating] = useState(false);
+  const [animationDirection, setAnimationDirection] = useState<
+    "left" | "right" | null
   >(null);
-  const [messageText, setMessageText] = useState('');
 
-  const connectWithUser = (userId: string) => {
-    setConnectedUsers((prev) => [...prev, userId]);
+  const currentProfile = sampleProfiles[currentProfileIndex];
+
+  const handleSwipe = (direction: "left" | "right") => {
+    if (isAnimating) return;
+
+    setIsAnimating(true);
+    setAnimationDirection(direction);
+
+    setTimeout(() => {
+      setCurrentProfileIndex((prev) => (prev + 1) % sampleProfiles.length);
+      setIsAnimating(false);
+      setAnimationDirection(null);
+    }, 300);
   };
-  const saveUser = (userId: string) => {
-    setSavedUsers((prev) => [...prev, userId]);
-  };
-  const openMessageModal = (user: (typeof mockMatches)[0]) => {
-    setMessageModalUser(user);
-    setMessageText('');
-  };
-  const closeMessageModal = () => {
-    setMessageModalUser(null);
-    setMessageText('');
-  };
-  const sendMessage = () => {
-    // For now, just close the modal. In a real app, send the message to backend.
-    closeMessageModal();
-  };
+
+  const handleLike = () => handleSwipe("right");
+  const handlePass = () => handleSwipe("left");
+
+  if (!currentProfile) {
+    return (
+      <div className="from-gray-900 to-gray-800 min-h-screen text-white flex flex-col bg-cover bg-center">
+        <TabNavigation activeTab="dashboard" />
+        <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-pink-50 to-red-50">
+          <div className="text-center">
+            <Heart className="w-16 h-16 mx-auto mb-4 text-pink-500" />
+            <h2 className="text-2xl font-bold text-gray-800 mb-2">
+              No more profiles!
+            </h2>
+            <p className="text-gray-600">Check back later for more matches.</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-gray-900 to-gray-800 text-white flex flex-col">
-      <TabNavigation activeTab="connect" />
-      <main className="flex-1 flex flex-col items-center py-10 px-4">
-        <div className="w-full max-w-4xl space-y-8">
-          <div className="text-center space-y-4 pt-4">
-            <div className="flex justify-center">
-              <span className="text-4xl">🧑‍🤝‍🧑</span>
+    <div className="from-gray-900 to-gray-800 min-h-screen text-white flex flex-col bg-cover bg-center">
+      <TabNavigation activeTab="dashboard" />
+      <div className="min-h-screen bg-gradient-to-br from-pink-50 to-red-50 p-4">
+        <div className="max-w-sm mx-auto">
+          {/* Header */}
+          <div className="flex items-center justify-center mb-6 pt-4">
+            <div className="flex items-center gap-2">
+              <div className="w-8 h-8 bg-gradient-to-r from-pink-500 to-red-500 rounded-full flex items-center justify-center">
+                <Heart className="w-5 h-5 text-white fill-current" />
+              </div>
+              <h1 className="text-2xl font-bold bg-gradient-to-r from-pink-500 to-red-500 bg-clip-text text-transparent">
+                Spark
+              </h1>
             </div>
-            <h1 className="text-3xl font-bold text-white">
-              Your Travel Matches
-            </h1>
-            <p className="text-gray-400">
-              Connect with fellow travelers who share your itinerary
-            </p>
           </div>
 
-          {/* Trip Selector or Prompt */}
-          {trips.length === 0 ? (
-            <div className="flex flex-col items-center space-y-4 py-12">
-              <div className="text-lg text-gray-300">
-                You have no trips yet.
-              </div>
-              <a
-                href="/trips"
-                className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-6 rounded-full shadow-lg transition-all"
-              >
-                Create a Trip
-              </a>
-            </div>
-          ) : (
-            <div className="flex flex-col md:flex-row items-center gap-4 mb-8">
-              <label className="text-blue-300 font-semibold">
-                Select Trip:
-              </label>
-              <select
-                className="bg-gray-800 border border-gray-700 rounded px-3 py-2 text-white"
-                value={selectedTripId ?? ''}
-                onChange={(e) => setSelectedTripId(Number(e.target.value))}
-              >
-                {trips.map((trip) => (
-                  <option key={trip.id} value={trip.id}>
-                    {trip.name}
-                  </option>
-                ))}
-              </select>
-            </div>
-          )}
+          {/* Profile Card */}
+          <div className="relative mb-6">
+            <Card
+              className={`overflow-hidden shadow-2xl transition-all duration-300 ${
+                isAnimating
+                  ? animationDirection === "right"
+                    ? "transform translate-x-full rotate-12 opacity-0"
+                    : "transform -translate-x-full -rotate-12 opacity-0"
+                  : "transform translate-x-0 rotate-0 opacity-100"
+              }`}
+            >
+              <CardContent className="p-0">
+                {/* Profile Image */}
+                <div className="relative">
+                  <img
+                    src={currentProfile.images[0] || "/placeholder.svg"}
+                    alt={currentProfile.name}
+                    className="w-full h-96 object-cover"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
 
-          {/* Matches List */}
-          {trips.length > 0 && (
-            <div className="grid gap-6">
-              {mockMatches.map((match) => (
-                <div
-                  key={match.id}
-                  className="bg-gray-800/80 border border-gray-700 rounded-2xl shadow p-6 flex flex-col md:flex-row gap-6"
-                >
-                  <div className="flex flex-col items-center md:items-start w-24 flex-shrink-0">
-                    <div className="w-16 h-16 rounded-full bg-blue-700 flex items-center justify-center text-3xl mb-2">
-                      {match.avatar}
-                    </div>
-                    <div className="text-xs text-gray-400 text-center md:text-left">
-                      {match.location}
+                  {/* Distance Badge */}
+                  <div className="absolute top-4 right-4">
+                    <Badge
+                      variant="secondary"
+                      className="bg-white/90 text-gray-800"
+                    >
+                      <MapPin className="w-3 h-3 mr-1" />
+                      {currentProfile.distance} km away
+                    </Badge>
+                  </div>
+
+                  {/* Basic Info Overlay */}
+                  <div className="absolute bottom-4 left-4 right-4 text-white">
+                    <h2 className="text-3xl font-bold mb-1">
+                      {currentProfile.name}, {currentProfile.age}
+                    </h2>
+                    <div className="flex items-center gap-4 text-sm opacity-90">
+                      <div className="flex items-center gap-1">
+                        <Briefcase className="w-4 h-4" />
+                        {currentProfile.occupation}
+                      </div>
                     </div>
                   </div>
-                  <div className="flex-1 space-y-2">
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <h3 className="text-xl font-bold text-white">
-                          {match.name}
-                        </h3>
-                        <p className="text-gray-400 text-sm">
-                          {match.age} • {match.location}
-                        </p>
-                      </div>
-                      <div className="flex items-center space-x-1 text-yellow-400">
-                        <span className="text-lg">★</span>
-                        <span className="text-sm">{match.rating}</span>
-                      </div>
+                </div>
+
+                {/* Profile Details */}
+                <div className="p-6 space-y-4">
+                  <div className="space-y-3">
+                    <div className="flex items-center gap-2 text-gray-600">
+                      <MapPin className="w-4 h-4" />
+                      <span className="text-sm">{currentProfile.location}</span>
                     </div>
-                    <p className="text-gray-300">{match.bio}</p>
-                    <div className="flex items-center gap-2 text-sm text-gray-400">
-                      <span className="text-blue-300">🗓️</span>
-                      <span>{match.tripOverlap} overlap</span>
-                      <span className="bg-blue-900 text-blue-300 px-2 py-0.5 rounded-full text-xs font-semibold ml-2">
-                        {match.travelStyle}
+
+                    <div className="flex items-center gap-2 text-gray-600">
+                      <GraduationCap className="w-4 h-4" />
+                      <span className="text-sm">
+                        {currentProfile.education}
                       </span>
                     </div>
-                    <div>
-                      <p className="text-sm text-gray-400 mb-1">
-                        Common Activities:
-                      </p>
-                      <div className="flex flex-wrap gap-1">
-                        {match.commonActivities.map((activity, idx) => (
-                          <span
-                            key={idx}
-                            className="bg-gray-700 text-gray-200 text-xs px-2 py-0.5 rounded-full"
-                          >
-                            {activity}
-                          </span>
-                        ))}
-                      </div>
-                    </div>
-                    <div>
-                      <p className="text-sm text-gray-400 mb-1">Interests:</p>
-                      <div className="flex flex-wrap gap-1">
-                        {match.interests.map((interest, idx) => (
-                          <span
-                            key={idx}
-                            className="border border-gray-600 text-gray-200 text-xs px-2 py-0.5 rounded-full"
-                          >
-                            {interest}
-                          </span>
-                        ))}
-                      </div>
-                    </div>
-                    <div className="flex space-x-3 pt-2">
-                      {connectedUsers.includes(match.id) ? (
-                        <div className="flex items-center space-x-2">
-                          <span className="bg-green-600 text-white px-3 py-1 rounded-full text-xs font-semibold flex items-center gap-1">
-                            🤝 Connected
-                          </span>
-                          <button
-                            className="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded-full text-xs font-semibold"
-                            onClick={() => openMessageModal(match)}
-                          >
-                            💬 Message
-                          </button>
-                        </div>
-                      ) : (
-                        <button
-                          onClick={() => connectWithUser(match.id)}
-                          className="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded-full text-xs font-semibold flex items-center gap-1"
+                  </div>
+
+                  <p className="text-gray-700 text-sm leading-relaxed">
+                    {currentProfile.bio}
+                  </p>
+
+                  {/* Interests */}
+                  <div>
+                    <h3 className="font-semibold text-gray-800 mb-2 text-sm">
+                      Interests
+                    </h3>
+                    <div className="flex flex-wrap gap-2">
+                      {currentProfile.interests.map((interest, index) => (
+                        <Badge
+                          key={index}
+                          variant="outline"
+                          className="text-xs"
                         >
-                          🤝 Connect
-                        </button>
-                      )}
-                      <button
-                        onClick={() => saveUser(match.id)}
-                        className={`border border-gray-600 text-gray-200 bg-transparent px-3 py-1 rounded-full text-xs font-semibold flex items-center gap-1 ${
-                          savedUsers.includes(match.id)
-                            ? 'bg-blue-900 border-blue-600'
-                            : ''
-                        }`}
-                      >
-                        {savedUsers.includes(match.id) ? '💙 Saved' : '🤍 Save'}
-                      </button>
+                          {interest}
+                        </Badge>
+                      ))}
                     </div>
                   </div>
                 </div>
-              ))}
-              {/* No More Matches Card */}
-              <div className="bg-gray-800/60 border border-gray-700 rounded-2xl shadow p-8 text-center space-y-4">
-                <div className="text-4xl text-gray-500">🧑‍🤝‍🧑</div>
-                <h3 className="text-lg font-semibold text-white">
-                  That's all for now!
-                </h3>
-                <p className="text-gray-400">
-                  We'll notify you when more travelers with similar itineraries
-                  are found.
-                </p>
-                <button className="border border-gray-600 text-gray-200 bg-transparent px-4 py-2 rounded-full text-sm font-semibold">
-                  Set Match Preferences
-                </button>
-              </div>
-            </div>
-          )}
-        </div>
-        {/* Message Modal */}
-        {messageModalUser && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center">
-            <div className="bg-gray-900 border border-blue-800 rounded-2xl shadow-2xl p-8 w-full max-w-md relative">
-              <button
-                className="absolute top-4 right-4 text-gray-400 hover:text-white text-2xl"
-                onClick={closeMessageModal}
-                aria-label="Close"
-              >
-                &times;
-              </button>
-              <div className="flex items-center gap-3 mb-4">
-                <div className="w-12 h-12 rounded-full bg-blue-700 flex items-center justify-center text-2xl">
-                  {messageModalUser.avatar}
-                </div>
-                <div>
-                  <div className="font-bold text-lg text-white">
-                    Message {messageModalUser.name}
-                  </div>
-                  <div className="text-gray-400 text-xs">
-                    {messageModalUser.location}
-                  </div>
-                </div>
-              </div>
-              <textarea
-                className="w-full bg-gray-800 border border-gray-700 rounded px-3 py-2 text-white mb-4"
-                rows={4}
-                placeholder="Type your message..."
-                value={messageText}
-                onChange={(e) => setMessageText(e.target.value)}
-              />
-              <button
-                className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-6 rounded-full shadow-lg transition-all w-full"
-                onClick={sendMessage}
-                disabled={!messageText.trim()}
-              >
-                Send
-              </button>
-            </div>
+              </CardContent>
+            </Card>
           </div>
-        )}
-      </main>
+
+          {/* Action Buttons */}
+          <div className="flex justify-center gap-6">
+            <Button
+              onClick={handlePass}
+              size="lg"
+              variant="outline"
+              className="w-16 h-16 rounded-full border-2 border-gray-300 hover:border-red-400 hover:bg-red-50 transition-colors bg-transparent"
+              disabled={isAnimating}
+            >
+              <X className="w-8 h-8 text-gray-600 hover:text-red-500" />
+            </Button>
+
+            <Button
+              onClick={handleLike}
+              size="lg"
+              className="w-16 h-16 rounded-full bg-gradient-to-r from-pink-500 to-red-500 hover:from-pink-600 hover:to-red-600 shadow-lg"
+              disabled={isAnimating}
+            >
+              <Heart className="w-8 h-8 text-white fill-current" />
+            </Button>
+          </div>
+
+          {/* Profile Counter */}
+          <div className="text-center mt-6">
+            <p className="text-sm text-gray-500">
+              {currentProfileIndex + 1} of {sampleProfiles.length}
+            </p>
+          </div>
+        </div>
+      </div>
     </div>
   );
-};
-
-export default ConnectPage;
+}

@@ -1,8 +1,8 @@
 import { useAuth0 } from "@auth0/auth0-react";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 
-const tabs = [
+const initialTabs = [
   { key: "dashboard", label: "Dashboard" },
   { key: "profile", label: "Profile" },
   { key: "trips", label: "Trips" },
@@ -15,7 +15,16 @@ interface TabNavigationProps {
 }
 
 const TabNavigation: React.FC<TabNavigationProps> = ({ activeTab }) => {
+  const [tabs, setTabs] = useState(initialTabs);
   const { loginWithRedirect, isAuthenticated, logout } = useAuth0();
+
+  useEffect(() => {
+    if (!isAuthenticated) {
+      setTabs([{ key: "dashboard", label: "Dashboard" }]);
+    } else {
+      setTabs(initialTabs);
+    }
+  }, [isAuthenticated]);
 
   return (
     <div className="flex items-center bg-gray-950 border-b border-gray-800 shadow-lg sticky top-0 z-20">
