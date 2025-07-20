@@ -191,7 +191,8 @@ def search_activities():
     user_info=user_info,
     budget=budget,
     start_date=start_date_str,
-    end_date=end_date_str
+    end_date=end_date_str,
+    trip_name=trip_name
     )
 
     response["itinerary"] = itinerary

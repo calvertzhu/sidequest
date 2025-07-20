@@ -8,6 +8,9 @@ from langchain_google_genai import ChatGoogleGenerativeAI
 from langchain.prompts import ChatPromptTemplate
 from langchain.output_parsers import PydanticOutputParser
 from langchain.schema import HumanMessage, SystemMessage
+from bson import ObjectId
+from flask import Blueprint, request, jsonify, current_app
+from app.models.matches import Match
 
 load_dotenv()
 
@@ -248,6 +251,36 @@ def get_match_summary(match_analysis: MatchAnalysis, user_id: str = None, matche
         "matched_user_id": matched_user_id,
         "match_score": overall_score
     }  
+
+def save_langchain_match_to_db(db, user1: dict, user2: dict, event_id: str):
+    """Run LangChain match analysis, get summary, and append to MongoDB."""
+    # Run analysis
+    match_analysis = generate_langchain_match_analysis(user1, user2)
+    summary = get_match_summary(match_analysis, user_id=str(user1.get('_id')), matched_user_id=str(user2.get('_id')))
+
+    # Prepare match document structure
+    # Try to find existing match doc for this user/event
+    db = current_app.config["DB"]
+    data = request.get_json()
+
+    try:
+        match_obj = Match(
+            user_id=data["user_id"],
+            event_id=data["event_id"],
+            matches=data.get("matches", [])
+        )
+
+        match_doc = match_obj.to_dict()
+        result = db.matches.insert_one(match_doc)
+
+        return jsonify({"_id": str(result.inserted_id)}), 201
+    
+    except Exception as e:
+        return jsonify({"error": str(e)}), 400
+   
+   
+
+
 
 
 def save_langchain_match_to_db(db, user1: dict, user2: dict, event_id: str):
