@@ -1,14 +1,14 @@
-import React, { useEffect, useState } from "react";
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import LandingPage from "./pages/LandingPage";
-import ProfilePage from "./pages/ProfilePage";
-import TripsPage from "./pages/TripsPage";
-import ConnectPage from "./pages/ConnectPage";
-import MessagesPage from "./pages/MessagesPage";
-import AuthLogin from "./components/AuthLogin";
-import ProfileSetup from "./components/ProfileSetup";
-import { useAuth0 } from "@auth0/auth0-react";
-import api from "./api";
+import React, { useEffect, useState } from 'react';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import LandingPage from './pages/LandingPage';
+import ProfilePage from './pages/ProfilePage';
+import TripsPage from './pages/TripsPage';
+import ConnectPage from './pages/ConnectPage';
+import MessagesPage from './pages/MessagesPage';
+import AuthLogin from './components/AuthLogin';
+import ProfileSetup from './components/ProfileSetup';
+import { useAuth0 } from '@auth0/auth0-react';
+import api from './api';
 
 export default function App() {
   const { user, isAuthenticated, isLoading } = useAuth0();
@@ -21,7 +21,7 @@ export default function App() {
       try {
         // Check if user exists in our database
         const response = await api.get(`/users/search?email=${user.email}`);
-        console.log("User check response:", response.data);
+        console.log('User check response:', response.data);
 
         if (response.data.exists) {
           // User exists, continue to normal app
@@ -31,7 +31,7 @@ export default function App() {
           setShowProfileSetup(true);
         }
       } catch (error) {
-        console.error("Error checking user:", error);
+        console.error('Error checking user:', error);
         // If there's an error, don't assume user doesn't exist
         // Instead, show the normal app and let the user navigate
         setShowProfileSetup(false);
@@ -71,10 +71,14 @@ export default function App() {
   return (
     <Router>
       <Routes>
-        <Route path="/profile" element={<ProfilePage />} />
-        <Route path="/trips" element={<TripsPage />} />
-        <Route path="/connect" element={<ConnectPage />} />
-        <Route path="/messages" element={<MessagesPage />} />
+        {isAuthenticated ? (
+          <>
+            <Route path="/profile" element={<ProfilePage />} />
+            <Route path="/trips" element={<TripsPage />} />
+            <Route path="/connect" element={<ConnectPage />} />
+            <Route path="/messages" element={<MessagesPage />} />
+          </>
+        ) : null}
         <Route path="/" element={<LandingPage />} />
         <Route path="/login" element={<AuthLogin />} />
       </Routes>

@@ -47,16 +47,16 @@ def create_match_prompt_template() -> ChatPromptTemplate:
     template = """You are an expert travel compatibility analyst. Your job is to analyze how well two travelers would match as travel companions.
 
 User 1 Profile:
-- Name: {user1_name}
-- Interests: {user1_interests}
-- Location: {user1_location}
-- Travel Dates: {user1_dates}
+- Name: {user.get('user_id', 'Unknown')}
+- Interests: {user.get('interests', [])}
+- Location: {user.get('location', 'Unknown')}
+- Travel Dates: {user.get('travel_dates', 'Unknown')}
 
 User 2 Profile:
-- Name: {user2_name}
-- Interests: {user2_interests}
-- Location: {user2_location}
-- Travel Dates: {user2_dates}
+- Name: {user.get('matched_user_id', 'Unknown')}
+- Interests: {user.get('interests', [])}
+- Location: {user.get('location', 'Unknown')}
+- Travel Dates: {user.get('travel_dates', 'Unknown')}
 
 Analyze their compatibility based on:
 
@@ -240,32 +240,14 @@ def generate_langchain_match_analysis(user1: Dict[str, Any], user2: Dict[str, An
         print(f"LangChain analysis failed: {str(e)}. Using fallback algorithm...")
         return fallback_match_analysis(user1, user2)
 
-def get_match_summary(match_analysis: MatchAnalysis, user_id: str = None) -> Dict[str, Any]:
-    """Extract only user_id and match score from the match analysis."""
+def get_match_summary(match_analysis: MatchAnalysis, user_id: str = None, matched_user_id: str = None) -> Dict[str, Any]:
+    """Extract user_id, match_user_id, and match score from the match analysis."""
     overall_score = match_analysis.overall_match_score
-    
-    
-
     return {
         "user_id": user_id,
+        "matched_user_id": matched_user_id,
         "match_score": overall_score
-    }
+    }  
 
-def get_simplified_match_result(user1: Dict[str, Any], user2: Dict[str, Any], user2_id: str = None) -> Dict[str, Any]:
-    """Generate match analysis and return only user_id and match score."""
-    match_analysis = generate_langchain_match_analysis(user1, user2)
-    return get_match_summary(match_analysis, user2_id)
 
-def get_multiple_matches_simplified(current_user: Dict[str, Any], potential_matches: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
-    """Get simplified match results for multiple users (user_id and match_score only)."""
-    results = []
-    
-    for potential_match in potential_matches:
-        user_id = potential_match.get('_id') or potential_match.get('user_id')
-        match_result = get_simplified_match_result(current_user, potential_match, user_id)
-        results.append(match_result)
-    
-    # Sort by match score (highest first)
-    results.sort(key=lambda x: x['match_score'], reverse=True)
-    
-    return results 
+

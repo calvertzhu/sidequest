@@ -220,9 +220,6 @@ const ProfileSetup = () => {
               placeholder="Enter your name"
               required
             />
-            {!profile.name && (
-              <p className="text-red-400 text-sm mt-1">Name is required</p>
-            )}
           </div>
         )}
 
@@ -239,9 +236,6 @@ const ProfileSetup = () => {
               placeholder="e.g., Toronto, Canada"
               required
             />
-            {!profile.location && (
-              <p className="text-red-400 text-sm mt-1">Location is required</p>
-            )}
           </div>
         )}
 
@@ -262,9 +256,6 @@ const ProfileSetup = () => {
               <option value="Other">Other</option>
               <option value="Prefer not to say">Prefer not to say</option>
             </select>
-            {!profile.gender && (
-              <p className="text-red-400 text-sm mt-1">Gender is required</p>
-            )}
           </div>
         )}
 
@@ -280,9 +271,6 @@ const ProfileSetup = () => {
               className="w-full bg-gray-800 border border-gray-700 rounded px-3 py-2 text-white"
               required
             />
-            {!profile.birthday && (
-              <p className="text-red-400 text-sm mt-1">Birthday is required</p>
-            )}
           </div>
         )}
 

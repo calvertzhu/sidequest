@@ -165,6 +165,31 @@ const TripsPage = () => {
     activities: "",
   });
 
+  const openModal = (trip?: Trip) => {
+    if (trip) {
+      const { id, ...rest } = trip;
+      setForm(rest);
+      setEditingId(id);
+    } else {
+      setForm({ ...emptyForm });
+      setEditingId(null);
+    }
+    setModalOpen(true);
+  };
+
+  const closeModal = () => {
+    setModalOpen(false);
+    setForm({ ...emptyForm });
+    setEditingId(null);
+  };
+
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
+    const { name, value } = e.target;
+    setForm((prev) => ({ ...prev, [name]: value }));
+  };
+
   const handleFormChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
@@ -196,29 +221,6 @@ const TripsPage = () => {
     closeModal();
   };
 
-  const openModal = (trip?: Trip) => {
-    if (trip) {
-      const { id, ...rest } = trip;
-      setEditingId(id);
-    } else {
-      setEditingId(null);
-    }
-    setModalOpen(true);
-  };
-
-  const closeModal = () => {
-    setModalOpen(false);
-    setForm({ ...emptyForm });
-    setEditingId(null);
-  };
-
-  const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
-  ) => {
-    const { name, value } = e.target;
-    setForm((prev) => ({ ...prev, [name]: value }));
-  };
-
   const handleDelete = (id: number) => {
     setTrips((prev) => prev.filter((trip) => trip.id !== id));
     if (viewingItineraryId === id) setViewingItineraryId(null);
@@ -233,8 +235,6 @@ const TripsPage = () => {
   };
 
   const viewingTrip = trips.find((trip) => trip.id === viewingItineraryId);
-
-  console.log(form);
 
   return (
     <div className="bg-gradient-to-b from-gray-900 to-gray-800 min-h-screen text-white flex flex-col">
