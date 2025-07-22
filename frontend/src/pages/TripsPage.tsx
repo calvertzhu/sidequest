@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import TabNavigation from "../components/TabNavigation";
 import { useAuth0 } from "@auth0/auth0-react";
 import api from "../api";
@@ -235,6 +235,21 @@ const TripsPage = () => {
   };
 
   const viewingTrip = trips.find((trip) => trip.id === viewingItineraryId);
+
+  const fetchItineraries = async () => {
+    try {
+      const response = await api.get(`/users/search?email=${user?.email}`);
+      console.log(response.data.user._id)
+      const res = await api.get(`/itineraries/user/${response.data.user._id}`)
+      console.log(res.data)
+    } catch(error) {
+      console.log(error)
+    }
+  }
+
+  useEffect(() => {
+    fetchItineraries();
+  }, [])
 
   return (
     <div className="bg-gradient-to-b from-gray-900 to-gray-800 min-h-screen text-white flex flex-col">

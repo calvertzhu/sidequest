@@ -251,29 +251,48 @@ def get_match_summary(match_analysis: MatchAnalysis, user_id: str = None, matche
 
 
 def save_langchain_match_to_db(db, user1: dict, user2: dict, event_id: str):
-    """Run LangChain match analysis, get summary, and append to MongoDB."""
-    # Run analysis
-    match_analysis = generate_langchain_match_analysis(user1, user2)
-    summary = get_match_summary(match_analysis, user_id=str(user1.get('_id')), matched_user_id=str(user2.get('_id')))
-
-    # Prepare match document structure
-    # Try to find existing match doc for this user/event
-    db = current_app.config["DB"]
-    data = request.get_json()
-
+    """Run LangChain match analysis and save match summary to DB."""
     try:
-        match_obj = Match(
-            user_id=data["user_id"],
-            event_id=data["event_id"],
-            matches=data.get("matches", [])
+        # Run LangChain or fallback analysis
+        match_analysis = generate_langchain_match_analysis(user1, user2)
+        summary = get_match_summary(
+            match_analysis,
+            user_id=str(user1.get('_id')),
+            matched_user_id=str(user2.get('_id'))
         )
 
-        match_doc = match_obj.to_dict()
-        result = db.matches.insert_one(match_doc)
+        # Structure to upsert or append into existing match doc
+        user_id = str(user1.get('_id'))
+        match_entry = {
+            "matched_user_id": summary["matched_user_id"],
+            "match_score": summary["match_score"],
+            "analysis": match_analysis.dict()
+        }
 
-        return jsonify({"_id": str(result.inserted_id)}), 201
+        # Check if a match doc for this user + event already exists
+        existing = db.matches.find_one({
+            "user_id": user_id,
+            "event_id": event_id
+        })
+
+        if existing:
+            # Update: append to matches array
+            db.matches.update_one(
+                {"_id": existing["_id"]},
+                {"$addToSet": {"matches": match_entry}}  # prevent duplicates
+            )
+            print(f"Match updated for user {user_id} in event {event_id}")
+        else:
+            # Create new match doc
+            match_doc = {
+                "user_id": ObjectId(user_id),
+                "event_id": ObjectId(event_id),
+                "matches": [match_entry]
+            }
+            db.matches.insert_one(match_doc)
+            print(f"Match document created for user {user_id} in event {event_id}")
 
     except Exception as e:
-        return jsonify({"error": str(e)}), 400
+        print("Error saving match:", str(e))
 
 
