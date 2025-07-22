@@ -169,18 +169,19 @@ def search_activities():
 
     db = current_app.config["DB"]
     user_info_res, status = getUserByEmail(db, user_email)
-    user_info = user_info_res.get_json()
-
- 
-    itinerary = generate_itinerary_json(
-    location=city,
-    interests=user_info.get("interests", []) if user_info else [],
-    activities_response=response,
-    user_info=user_info,
-    budget=budget,
-    start_date=start_date_str,
-    end_date=end_date_str,
-    trip_name=trip_name
+    user_info_temp = user_info_res.get_json()
+    user_info = user_info_temp["user"]
+    gemini_prompt = generate_itinerary_json(
+        location=city,
+        interests=user_info.get("interests", []),
+        activities_response=response,
+        user_info=user_info,
+        budget=budget,
+        start_date=start_date_str,
+        end_date=end_date_str,
+        user_email=user_email,
+        trip_name=trip_name,
+        user_id=user_info["_id"]
     )
 
     response["itinerary"] = itinerary

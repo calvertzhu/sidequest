@@ -2,6 +2,7 @@ import os
 import json
 import google.generativeai as genai
 from dotenv import load_dotenv
+from datetime import datetime
 
 from routes.db.event_routes import insertEvent, updateEventWithUser, getEventByDetails
 from routes.db.itinerary_routes import insertItinerary
@@ -89,28 +90,28 @@ def build_gemini_prompt(location, interests, activities_response, user_info=None
     - start_time (e.g. "09:00")
     - end_time (e.g. "11:00")
 
-    The format must be:
-    [
-    {{
-        "name": "activity name",
-        "description": "short description",
-        "location": "address or venue",
-        "start_time": "HH:MM",
-        "end_time": "HH:MM"
-    }},
-    ...
-    ]
+The format must be:
+[
+  {{
+    "name": "activity name",
+    "description": "short description",
+    "location": "address or venue",
+    "start_time": "HH:MM",
+    "end_time": "HH:MM"
+  }},
+  ...
+]
 
     Only return valid JSON. No commentary or markdown.
     """
 
 
-def generate_itinerary_json(location, interests, activities_response, user_info=None, budget="medium", start_date=None, end_date=None, user_email=None, db=None, trip_name=None):
+def generate_itinerary_json(location, interests, activities_response, user_info=None, budget="medium", start_date=None, end_date=None, user_email=None, db=None, trip_name=None, user_id=None):
     """
     Generate itinerary using Gemini with complete activity routes response.
     
     Args:
-        location: Destination city
+        city: Destination city
         interests: User interests list
         activities_response: Full response from activity routes
         user_info: User profile from database
@@ -137,47 +138,43 @@ def generate_itinerary_json(location, interests, activities_response, user_info=
         
         # Parse the JSON
         itinerary_json = json.loads(response_text)
-        
-        userId_res, status = getUserByEmail(db, user_email)
-        user_info = userId_res.get_json()
-        userId = user_info.get("_id")
-        events =[]
+        events = []
 
         for event in itinerary_json:
             name = event["name"]
-            location = event["location"]
+            city = event["location"]
             time_str = event['start_time']
             
-            response = getEventByDetails(db, name, location, time_str)
-            event
-            if response("exists"):
-                event_id = response["event"]["_id"]
+            event_response, status_code = getEventByDetails(db, name, location, time_str)
+            event_data = event_response.get_json()
+            if event_data.get("exists"):
+                event_id = event_data["event"].get("_id")
                 data = {
-                    "user_id": userId
+                    "user_id": user_id
                 }
                 events.append(event_id)
-                # insertItinerary(db, data)
             else:
+                full_time_str = f"{start_date}T{event['start_time']}" 
                 data = {
                     "name": name,
                     "desc": event.get("description", ""),
                     "location": location,
-                    "time": time_str,
-                    "users": [userId]
+                    "time": full_time_str,
+                    "users": [user_id]
                 }
-                event_id = insertEvent(db, data)
+                event_response, status = insertEvent(db, data)
+                event_data = event_response.get_json()
+                event_id = event_data["_id"]
                 events.append(event_id)
-
         data = {
-            "user_id":userId,
-            "location":location,
+            "user_id":user_id,
+            "location":city,
             "date_from":start_date,
             "date_to":end_date,
             "event_ids":events,
             "trip_name":trip_name
         }
-        insertItinerary(db, data)
-
+        insertItinerary(data)
         return itinerary_json
         
     except Exception as e:
